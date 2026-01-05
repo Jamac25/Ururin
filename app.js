@@ -535,7 +535,7 @@ const App = {
     },
 
     renderCampaignForm(existingCampaign) {
-        const campaign = existingCampaign || { emoji: '📋', name: '', description: '', goal: '', deadline: '', zaadNumber: '' };
+        const campaign = existingCampaign || { icon: 'folder', name: '', description: '', goal: '', deadline: '', zaadNumber: '' };
         const settings = DB.getSettings();
         const isEdit = !!existingCampaign;
 
@@ -553,7 +553,7 @@ const App = {
             <form id="campaign-form" onsubmit="App.saveCampaign(event)">
                 ${isEdit ? `<input type="hidden" name="id" value="${existingCampaign.id}">` : ''}
                 
-                ${Components.emojiPicker(campaign.emoji)}
+                ${Components.iconPicker(campaign.icon || 'folder')}
                 
                 ${Components.formGroup({
             label: 'Magaca Ololaha',
