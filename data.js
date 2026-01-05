@@ -337,9 +337,10 @@ Mahadsanid taageeradaada!`,
     },
 
     // ========================================
-    // Sample Data (for development)
+    // Sample Data (DISABLED FOR PRODUCTION)
     // ========================================
 
+    /*
     loadSampleData() {
         // Sample Campaigns with codes
         const campaigns = [
@@ -389,6 +390,7 @@ Mahadsanid taageeradaada!`,
         console.log('Sample data loaded!');
         return true;
     },
+    */
 
     clearAll() {
         localStorage.removeItem(this.KEYS.CAMPAIGNS);
