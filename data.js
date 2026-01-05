@@ -1,5 +1,5 @@
 /* ========================================
-   URURIN - Data Layer
+   OLOLEEYE - Data Layer
    Models, LocalStorage, Sample Data
    ======================================== */
 
@@ -712,7 +712,7 @@ ${this.getJoinLink(campaign.code)}`;
     generateAnnouncement(campaign) {
         const settings = DB.getSettings();
 
-        return `URURINTA LACAGTA - ${campaign.name}
+        return `OLOLEEYE - ${campaign.name}
 
 ${campaign.description || ''}
 

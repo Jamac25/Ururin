@@ -1,5 +1,5 @@
 /* ========================================
-   URURIN - Main Application
+   OLOLEEYE - Main Application
    Router, Views, Event Handlers
    ======================================== */
 
@@ -40,7 +40,7 @@ const App = {
             this.handleRoute();
         }
 
-        console.log('🌙 Ururin initialized!');
+        console.log('🌙 Ololeeye initialized!');
     },
 
     ensureCampaignCodes() {
@@ -193,9 +193,9 @@ const App = {
         if (mainRoutes.includes(route)) {
             backBtn.classList.add('hidden');
             if (route === '/join' || route === '/join-success' || route === '/confirm-payment') {
-                headerTitle.textContent = 'URURIN';
+                headerTitle.textContent = 'OLOLEEYE';
             } else {
-                headerTitle.textContent = 'URURIN';
+                headerTitle.textContent = 'OLOLEEYE';
             }
         } else {
             backBtn.classList.remove('hidden');
@@ -220,7 +220,7 @@ const App = {
                 '/auth': 'PIN-ka Maaraynta',
                 '/logs': 'Taariikhda (Logs)'
             };
-            headerTitle.textContent = titles[route] || 'URURIN';
+            headerTitle.textContent = titles[route] || 'OLOLEEYE';
         }
     },
 
@@ -236,8 +236,8 @@ const App = {
         return `
             <div class="welcome-page">
                 <div class="welcome-logo">
-                    <img src="logo-full.png" alt="Ururin" class="welcome-logo-icon" />
-                    <div class="welcome-logo-text">URURIN</div>
+                    <img src="logo-full.png" alt="Ololeeye" class="welcome-logo-icon" />
+                    <div class="welcome-logo-text">OLOLEEYE</div>
                     <div class="welcome-logo-subtitle">Ururinta Lacagaha</div>
                 </div>
                 
@@ -1050,9 +1050,9 @@ const App = {
             <div style="margin-top: var(--spacing-2xl); padding-top: var(--spacing-xl); border-top: 1px solid var(--border-color);">
                 <div style="text-align: center; color: var(--text-tertiary); font-size: var(--font-size-sm);">
                     <div style="font-size: 1.5rem; margin-bottom: var(--spacing-sm);">🌙</div>
-                    <div style="font-weight: var(--font-weight-semibold); color: var(--text-secondary);">URURIN</div>
+                    <div style="font-weight: var(--font-weight-semibold); color: var(--text-secondary);">OLOLEEYE</div>
                     <div>Version 1.0</div>
-                    <div style="margin-top: var(--spacing-xs);">Ururinta Lacagaha ee WhatsApp</div>
+                    <div style="margin-top: var(--spacing-xs);">Ololeeynta Lacagaha ee WhatsApp</div>
                 </div>
             </div>
         `;

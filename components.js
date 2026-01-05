@@ -1,6 +1,6 @@
 /* ========================================
-   URURIN - UI Components
-   Premium reusable component library
+   OLOLEEYE - UI Components
+   Reusable UI Building Blocks
    ======================================== */
 
 const Components = {

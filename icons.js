@@ -1,6 +1,6 @@
 /* ========================================
-   URURIN - Professional Icon Library
-   SVG Icons for UI (not WhatsApp messages)
+   OLOLEEYE - Professional Icon Library
+   SVG Icons for the application
    ======================================== */
 
 const Icons = {
