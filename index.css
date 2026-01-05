@@ -1453,6 +1453,39 @@ body {
     box-shadow: 0 0 0 3px var(--color-primary-subtle);
 }
 
+/* Icon Picker - Same as emoji picker but for SVG icons */
+.icon-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+}
+
+.icon-picker-btn {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    background: var(--bg-tertiary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    color: var(--text-primary);
+}
+
+.icon-picker-btn:hover {
+    transform: scale(1.1);
+    border-color: var(--border-color-strong);
+}
+
+.icon-picker-btn.selected {
+    border-color: var(--color-primary);
+    background: var(--color-primary-subtle);
+    box-shadow: 0 0 0 3px var(--color-primary-subtle);
+    color: var(--color-primary);
+}
+
 /* ========================================
    Message Preview
    ======================================== */
