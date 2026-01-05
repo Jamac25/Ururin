@@ -653,16 +653,19 @@ const WhatsApp = {
 
     // Generate shareable join link for campaign
     getJoinLink(campaignCode) {
-        // In production, use actual domain
-        const baseUrl = window.location.origin;
-        return `${baseUrl}/#/join?c=${campaignCode}`;
+        // Use full URL minus hash to handle subdirectories (like on GitHub Pages)
+        const baseUrl = window.location.href.split('#')[0];
+        // Ensure it doesn't end with index.html
+        const cleanBase = baseUrl.replace(/\/index\.html$/, '/').replace(/\/$/, '');
+        return `${cleanBase}/#/join?c=${campaignCode}`;
     },
 
     // Generate individual reminder message
     generateReminder(contributor, campaign) {
         const settings = DB.getSettings();
         const firstName = contributor.name.split(' ')[0];
-        const confirmLink = `${window.location.origin}/#/confirm-payment?c=${campaign.code}`;
+        const baseUrl = window.location.href.split('#')[0].replace(/\/index\.html$/, '/').replace(/\/$/, '');
+        const confirmLink = `${baseUrl}/#/confirm-payment?c=${campaign.code}`;
 
         return `Asc ${firstName},
 
