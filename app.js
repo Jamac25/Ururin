@@ -504,9 +504,13 @@ const App = {
                     ${Icons.render('link', 'icon icon-sm')} Kopioi Join-linkki
                 </button>
                 <button class="btn btn-secondary" onclick="App.copyGroupUpdate('${id}')">
-                    ${Icons.render('send', 'icon icon-sm')} Kopioi ryhmäviesti
+                    ${Icons.render('send', 'icon icon-sm')} Kopioi Päivitys
                 </button>
             </div>
+
+            <button class="btn btn-outline btn-block mb-md" onclick="App.copyDetailedList('${id}')">
+                📋 Kopioi Yksityiskohtainen Lista
+            </button>
             
             <div style="display: flex; gap: var(--spacing-sm);">
                 <button class="btn btn-outline" style="flex: 1;" onclick="App.navigate('/edit-campaign/${id}')">
@@ -2161,7 +2165,14 @@ const App = {
         const campaign = DB.getCampaign(campaignId);
         const message = WhatsApp.generateGroupUpdate(campaign);
         navigator.clipboard.writeText(message);
-        Components.toast('Viesti kopioitu! 📋', 'success');
+        Components.toast('Päivitysviesti kopioitu! 📋', 'success');
+    },
+
+    copyDetailedList(campaignId) {
+        const message = WhatsApp.generateDetailedList(campaignId);
+        navigator.clipboard.writeText(message);
+        Components.toast('Yksityiskohtainen lista kopioitu! 📋', 'success');
+        DB.logAction(campaignId, 'copy_detailed_list', 'Copied detailed contributor list to clipboard');
     },
 
     viewShare(campaignId) {
@@ -2189,12 +2200,12 @@ const App = {
             </div>
 
             <div class="section-header" style="margin-top: var(--spacing-xl);">
-                <h3 class="section-title">📢 Julkistusviesti</h3>
+                <h3 class="section-title">📊 Yksityiskohtainen Lista</h3>
             </div>
             <div class="card" style="cursor: default;">
-                <div class="message-preview-text" style="font-size: var(--font-size-sm); white-space: pre-wrap;">${announcement}</div>
-                <button class="btn btn-secondary btn-block mt-md" onclick="App.copyAnnouncement('${campaignId}')">
-                    📋 Kopioi viesti
+                <div class="message-preview-text" style="font-size: var(--font-size-sm); white-space: pre-wrap; max-height: 200px; overflow-y: auto;">${WhatsApp.generateDetailedList(campaignId)}</div>
+                <button class="btn btn-secondary btn-block mt-md" onclick="App.copyDetailedList('${campaignId}')">
+                    📋 Kopioi lista
                 </button>
             </div>
         `;

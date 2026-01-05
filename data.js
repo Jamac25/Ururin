@@ -728,6 +728,42 @@ ${this.getJoinLink(campaign.code)}
 Mahadsanid!`;
     },
 
+    // Generate detailed list for sharing
+    generateDetailedList(campaignId) {
+        const campaign = DB.getCampaign(campaignId);
+        const contributors = DB.getContributors(campaignId);
+        const stats = DB.getCampaignStats(campaignId);
+        const settings = DB.getSettings();
+
+        if (!campaign) return '';
+
+        let list = `💰 LIISKA URURINTA LACAGTA – ${campaign.name.toUpperCase()}\n\n`;
+
+        if (campaign.description) {
+            list += `(${campaign.description})\n\n`;
+        }
+
+        list += `Qiimaha guud ee loo baahan yahay waa ${settings.currencySymbol}${campaign.goal.toLocaleString()}.\n\n`;
+
+        contributors.forEach((c, index) => {
+            const statusIcon = c.status === 'paid' ? '✅' : '❌';
+            list += `${index + 1}. ${c.name} — ${settings.currencySymbol}${parseFloat(c.amount).toLocaleString()} ${statusIcon}\n`;
+        });
+
+        const remaining = Math.max(0, stats.goal - stats.collected);
+
+        list += `\n📊 SUMMARY\n`;
+        list += `* paid (✅): ${settings.currencySymbol}${stats.collected.toLocaleString()}\n`;
+        list += `* unpaid (❌): ${settings.currencySymbol}${contributors.filter(c => c.status !== 'paid').reduce((sum, c) => sum + (parseFloat(c.amount) || 0), 0).toLocaleString()}\n`;
+        list += `* Wadarta Guud ee Liiska: ${settings.currencySymbol}${contributors.reduce((sum, c) => sum + (parseFloat(c.amount) || 0), 0).toLocaleString()}\n`;
+        list += `* Target: ${settings.currencySymbol}${stats.goal.toLocaleString()}\n`;
+        list += `* Lacagta Hadhay: ${settings.currencySymbol}${remaining.toLocaleString()}\n\n`;
+
+        list += `📦 Account Numberka lagu shubayo: ${campaign.zaadNumber || settings.defaultZaad}`;
+
+        return list;
+    },
+
     // Get pending contributors who need reminders
     getPendingReminders(campaignId, hoursThreshold = 24) {
         const contributors = DB.getContributors(campaignId);
