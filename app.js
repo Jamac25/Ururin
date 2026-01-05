@@ -188,7 +188,7 @@ const App = {
         const backBtn = document.getElementById('back-btn');
         const headerTitle = document.getElementById('header-title');
 
-        const mainRoutes = ['/', '/campaigns', '/contributors', '/stats', '/join', '/join-success', '/confirm-payment'];
+        const mainRoutes = ['/', '/campaigns', '/contributors', '/stats', '/add', '/welcome', '/join', '/join-success', '/confirm-payment'];
 
         if (mainRoutes.includes(route)) {
             backBtn.classList.add('hidden');
