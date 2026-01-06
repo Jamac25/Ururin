@@ -279,6 +279,24 @@ Waxaan gaarnay: {collected}/${'{goal}'} ({percent}%)
 
 Mahadsanid taageeradaada!`,
                 variables: ['name', 'campaign_name', 'collected', 'goal', 'percent', 'paid_count', 'custom_message']
+            },
+            {
+                type: 'payment_confirmation_link',
+                name: 'Xaqiijinta Bixinta',
+                nameEn: 'Payment Confirmation Link',
+                text: `Assalamu Calaykum {name}!
+
+Waad ku darsantay ololaha "{campaign_name}".
+
+Ballantaada: {amount}
+
+Markii aad bixiso lacagta, xaqiiji halkan:
+{confirmation_link}
+
+Lambarka lacagta: {zaad_number}
+
+Mahadsanid!`,
+                variables: ['name', 'campaign_name', 'amount', 'confirmation_link', 'zaad_number']
             }
         ];
     },
@@ -762,6 +780,24 @@ Mahadsanid!`;
         list += `📦 Account Numberka lagu shubayo: ${campaign.zaadNumber || settings.defaultZaad}`;
 
         return list;
+    },
+
+    // Generate payment confirmation message with personal link
+    generateConfirmationMessage(contributor, campaign) {
+        const settings = DB.getSettings();
+        const firstName = contributor.name.split(' ')[0];
+        const baseUrl = window.location.href.split('#')[0].replace(/\/index\.html$/, '/').replace(/\/$/, '');
+        const confirmLink = `${baseUrl}/#/confirm-payment?c=${campaign.code}&phone=${encodeURIComponent(contributor.phone)}`;
+
+        const variables = {
+            name: firstName,
+            campaign_name: campaign.name,
+            amount: `${settings.currencySymbol}${contributor.amount}`,
+            confirmation_link: confirmLink,
+            zaad_number: campaign.zaadNumber || settings.defaultZaad
+        };
+
+        return this.generateMessage('payment_confirmation_link', variables);
     },
 
     // Get pending contributors who need reminders

@@ -1931,6 +1931,11 @@ const App = {
         DB.saveContributor(contributor);
         Components.toast('Waad ku dartay liiska! ✅', 'success');
 
+        // Automatically send confirmation message to contributor via WhatsApp
+        const campaign = DB.getCampaign(campaignId);
+        const message = WhatsApp.generateConfirmationMessage(contributor, campaign);
+        WhatsApp.openChat(phone, message);
+
         this.navigate('/join-success');
     },
 
@@ -1967,7 +1972,21 @@ const App = {
         const campaign = DB.getCampaignByCode(campaignCode);
         if (!campaign) return this.view404();
 
-        const contributor = this.existingContributor;
+        // Check if phone parameter is in URL
+        const urlParams = new URLSearchParams(window.location.hash.split('?')[1]);
+        const phoneParam = urlParams.get('phone');
+
+        let contributor = this.existingContributor;
+
+        // If phone parameter exists and no existing contributor, try to find by phone
+        if (phoneParam && !contributor) {
+            const decodedPhone = decodeURIComponent(phoneParam);
+            contributor = DB.getContributorByPhone(decodedPhone, campaign.id);
+            if (contributor) {
+                this.existingContributor = contributor;
+            }
+        }
+
         const settings = DB.getSettings();
 
         if (!contributor) {
