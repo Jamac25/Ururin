@@ -1223,12 +1223,48 @@ const App = {
                 <button type="submit" class="btn btn-primary btn-block btn-lg">💾 Kaydi Dejinta</button>
             </form>
             
-            <div style="margin-top: var(--spacing-2xl); padding-top: var(--spacing-xl); border-top: 1px solid var(--border-color);">
-                <div style="text-align: center; color: var(--text-tertiary); font-size: var(--font-size-sm);">
-                    <div style="font-size: 1.5rem; margin-bottom: var(--spacing-sm);">🌙</div>
+            <div class="section-header mt-2xl">
+                <h3 class="section-title">🔔 Notifications</h3>
+            </div>
+            
+            <div class="card" style="cursor: default;">
+                <div class="mb-md">
+                    <div style="font-weight: var(--font-weight-semibold);" class="mb-xs">Browser Notifications</div>
+                    <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">
+                        Hel ogeysiis marka lacag cusub la soo sheego
+                    </div>
+                </div>
+                
+                ${Notifications.enabled ? `
+                    <div class="flex flex-col gap-sm">
+                        <div class="p-md" style="background: var(--color-success-bg); border-radius: var(--radius-lg); color: var(--color-success); font-size: var(--font-size-sm);">
+                            ✅ Notifications waa furan yihiin
+                        </div>
+                        <button class="btn btn-secondary btn-block" onclick="Notifications.test()">
+                            ${Icons.render('bell', 'icon icon-sm')} Test Notification
+                        </button>
+                        <button class="btn btn-outline btn-block" onclick="Notifications.disable(); App.handleRoute();">
+                            Xir Notifications
+                        </button>
+                    </div>
+                ` : `
+                    <div class="flex flex-col gap-sm">
+                        <div class="p-md" style="background: var(--bg-tertiary); border-radius: var(--radius-lg); font-size: var(--font-size-sm); color: var(--text-secondary);">
+                            Notifications waa xiran yihiin
+                        </div>
+                        <button class="btn btn-primary btn-block" onclick="Notifications.requestPermission().then(() => App.handleRoute());">
+                            ${Icons.render('bell', 'icon icon-sm')} Fur Notifications
+                        </button>
+                    </div>
+                `}
+            </div>
+            
+            <div class="mt-2xl pt-xl" style="border-top: 1px solid var(--border-color);">
+                <div class="text-center" style="color: var(--text-tertiary); font-size: var(--font-size-sm);">
+                    <div class="emoji-lg mb-sm">🌙</div>
                     <div style="font-weight: var(--font-weight-semibold); color: var(--text-secondary);">OLOLEEYE</div>
                     <div>Version 1.0</div>
-                    <div style="margin-top: var(--spacing-xs);">Ololeeynta Lacagaha ee WhatsApp</div>
+                    <div class="mt-xs">Ololeeynta Lacagaha ee WhatsApp</div>
                 </div>
             </div>
         `;
