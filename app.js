@@ -3,6 +3,132 @@
    Router, Views, Event Handlers
    ======================================== */
 
+// ========================================
+// Browser Notifications Utility
+// ========================================
+
+const Notifications = {
+    permission: 'default',
+    enabled: false,
+
+    async init() {
+        // Check if notifications are supported
+        if (!('Notification' in window)) {
+            console.log('Browser does not support notifications');
+            return false;
+        }
+
+        // Check current permission
+        this.permission = Notification.permission;
+        this.enabled = this.permission === 'granted';
+
+        // Load user preference
+        const settings = DB.getSettings();
+        if (settings.notificationsEnabled === false) {
+            this.enabled = false;
+        }
+
+        return this.enabled;
+    },
+
+    async requestPermission() {
+        if (!('Notification' in window)) {
+            Components.toast('Browserkaagu ma taageero notifications', 'error');
+            return false;
+        }
+
+        if (Notification.permission === 'granted') {
+            this.enabled = true;
+            DB.saveSetting('notificationsEnabled', true);
+            Components.toast('Notifications waa la furtay!', 'success');
+            return true;
+        }
+
+        if (Notification.permission === 'denied') {
+            Components.toast('Notifications waa la diiday. Fur browser settings', 'error');
+            return false;
+        }
+
+        // Request permission
+        const permission = await Notification.requestPermission();
+        this.permission = permission;
+
+        if (permission === 'granted') {
+            this.enabled = true;
+            DB.saveSetting('notificationsEnabled', true);
+            Components.toast('Notifications waa la furtay!', 'success');
+            return true;
+        } else {
+            Components.toast('Notifications permission waa la diiday', 'error');
+            return false;
+        }
+    },
+
+    show(title, options = {}) {
+        if (!this.enabled || Notification.permission !== 'granted') {
+            return null;
+        }
+
+        const defaultOptions = {
+            icon: 'logo.png',
+            badge: 'logo.png',
+            vibrate: [200, 100, 200],
+            requireInteraction: false,
+            ...options
+        };
+
+        try {
+            const notification = new Notification(title, defaultOptions);
+
+            // Auto-close after 5 seconds if not interactive
+            if (!defaultOptions.requireInteraction) {
+                setTimeout(() => notification.close(), 5000);
+            }
+
+            return notification;
+        } catch (e) {
+            console.error('Notification error:', e);
+            return null;
+        }
+    },
+
+    // Notification for new pending payment
+    notifyNewPayment(contributorName, amount, campaignName) {
+        const settings = DB.getSettings();
+        return this.show('💰 Lacag Cusub!', {
+            body: `${contributorName} ayaa sheegay inuu bixiyey ${settings.currencySymbol}${amount}\n\nOlole: ${campaignName}`,
+            tag: 'new-payment',
+            requireInteraction: true,
+            data: { type: 'payment' }
+        });
+    },
+
+    // Notification for campaign goal reached
+    notifyGoalReached(campaignName, collected) {
+        const settings = DB.getSettings();
+        return this.show('🎉 Hadafka la gaaray!', {
+            body: `${campaignName}\n\nWaxaa la ururiyey: ${settings.currencySymbol}${collected}`,
+            tag: 'goal-reached',
+            requireInteraction: true,
+            data: { type: 'goal' }
+        });
+    },
+
+    // Test notification
+    test() {
+        return this.show('✅ Notifications waa shaqeynayaan!', {
+            body: 'Waxaad heli doontaa notifications marka lacag cusub la soo sheego.',
+            tag: 'test'
+        });
+    },
+
+    disable() {
+        this.enabled = false;
+        DB.saveSetting('notificationsEnabled', false);
+        Components.toast('Notifications waa la xiray', 'success');
+    }
+};
+
 const App = {
     currentRoute: null,
     currentParams: {},
@@ -20,6 +146,9 @@ const App = {
         if (settings.theme === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
         }
+
+        // Initialize notifications
+        Notifications.init();
 
         // Ensure all campaigns have codes
         this.ensureCampaignCodes();
