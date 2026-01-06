@@ -2286,6 +2286,11 @@ const App = {
         };
         DB.savePayment(payment);
 
+        // Trigger browser notification for coordinator
+        if (Notifications.enabled) {
+            Notifications.notifyNewPayment(contributor.name, contributor.amount, campaign.name);
+        }
+
         Components.toast('Mahadsanid! Maamulaha ayaa xaqiijin doona.', 'success');
         this.existingContributor = { ...contributor, status: 'pending' };
         this.handleRoute();
