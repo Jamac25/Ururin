@@ -929,6 +929,158 @@ const ProofParser = {
     }
 };
 
+// ========================================
+// CSV Export Utilities
+// ========================================
+
+const CSVExport = {
+    // Convert array of objects to CSV string
+    toCSV(data, headers) {
+        if (!data || !data.length) return '';
+
+        // Create header row
+        const headerRow = headers.map(h => `"${h.label}"`).join(',');
+
+        // Create data rows
+        const dataRows = data.map(row => {
+            return headers.map(h => {
+                const value = h.getValue ? h.getValue(row) : row[h.key];
+                // Escape quotes and wrap in quotes
+                const escaped = String(value || '').replace(/"/g, '""');
+                return `"${escaped}"`;
+            }).join(',');
+        });
+
+        return [headerRow, ...dataRows].join('\n');
+    },
+
+    // Download CSV file
+    download(csvContent, filename) {
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    },
+
+    // Export contributors for a campaign
+    exportCampaignContributors(campaignId) {
+        const campaign = DB.getCampaign(campaignId);
+        if (!campaign) return false;
+
+        const contributors = DB.getContributors(campaignId);
+        const settings = DB.getSettings();
+
+        const headers = [
+            { key: 'name', label: 'Magaca' },
+            { key: 'phone', label: 'Telefoon' },
+            { key: 'amount', label: `Lacagta (${settings.currencySymbol})` },
+            {
+                key: 'status', label: 'Xaalada', getValue: (row) => {
+                    return row.status === 'paid' ? 'Bixiyey' :
+                        row.status === 'pending' ? 'Sugaya' : 'Diidey';
+                }
+            },
+            {
+                key: 'createdAt', label: 'Taariikh', getValue: (row) => {
+                    return new Date(row.createdAt).toLocaleDateString('so-SO');
+                }
+            }
+        ];
+
+        const csv = this.toCSV(contributors, headers);
+        const filename = `${campaign.name}_Contributors_${new Date().toISOString().split('T')[0]}.csv`;
+
+        this.download(csv, filename);
+        return true;
+    },
+
+    // Export campaign summary
+    exportCampaignSummary(campaignId) {
+        const campaign = DB.getCampaign(campaignId);
+        if (!campaign) return false;
+
+        const stats = DB.getCampaignStats(campaignId);
+        const settings = DB.getSettings();
+
+        // Create summary data
+        const summaryData = [
+            { label: 'Magaca Ololaha', value: campaign.name },
+            { label: 'Koodka', value: campaign.code },
+            { label: 'Sharaxaad', value: campaign.description || '-' },
+            { label: 'Hadafka', value: `${settings.currencySymbol}${campaign.goal}` },
+            { label: 'La Ururiyey', value: `${settings.currencySymbol}${stats.collected}` },
+            { label: 'Boqolkiiba', value: `${stats.percent}%` },
+            { label: 'Hadhay', value: `${settings.currencySymbol}${stats.remaining}` },
+            { label: 'Tabarucayaal (Wadarta)', value: stats.total },
+            { label: 'Bixiyey', value: stats.paidCount },
+            { label: 'Sugaya', value: stats.pendingCount },
+            { label: 'Diidey', value: stats.declinedCount },
+            { label: 'Taariikh La Abuuray', value: new Date(campaign.createdAt).toLocaleDateString('so-SO') }
+        ];
+
+        const headers = [
+            { key: 'label', label: 'Faahfaahin' },
+            { key: 'value', label: 'Qiime' }
+        ];
+
+        const csv = this.toCSV(summaryData, headers);
+        const filename = `${campaign.name}_Summary_${new Date().toISOString().split('T')[0]}.csv`;
+
+        this.download(csv, filename);
+        return true;
+    },
+
+    // Export all campaigns overview
+    exportAllCampaigns() {
+        const campaigns = DB.getCampaigns();
+        const settings = DB.getSettings();
+
+        const data = campaigns.map(c => {
+            const stats = DB.getCampaignStats(c.id);
+            return {
+                name: c.name,
+                code: c.code,
+                goal: c.goal,
+                collected: stats.collected,
+                percent: stats.percent,
+                total: stats.total,
+                paid: stats.paidCount,
+                pending: stats.pendingCount,
+                createdAt: c.createdAt
+            };
+        });
+
+        const headers = [
+            { key: 'name', label: 'Magaca' },
+            { key: 'code', label: 'Koodka' },
+            { key: 'goal', label: `Hadafka (${settings.currencySymbol})` },
+            { key: 'collected', label: `La Ururiyey (${settings.currencySymbol})` },
+            { key: 'percent', label: 'Boqolkiiba (%)' },
+            { key: 'total', label: 'Tabarucayaal' },
+            { key: 'paid', label: 'Bixiyey' },
+            { key: 'pending', label: 'Sugaya' },
+            {
+                key: 'createdAt', label: 'Taariikh', getValue: (row) => {
+                    return new Date(row.createdAt).toLocaleDateString('so-SO');
+                }
+            }
+        ];
+
+        const csv = this.toCSV(data, headers);
+        const filename = `Ololeeye_All_Campaigns_${new Date().toISOString().split('T')[0]}.csv`;
+
+        this.download(csv, filename);
+        return true;
+    }
+};
+
 // Initialize with sample data if empty
 if (!DB.getCampaigns().length) {
     DB.loadSampleData();

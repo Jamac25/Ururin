@@ -343,9 +343,9 @@ const App = {
             
             ${DB.getPendingPayments().length ? `
                 <div class="card" style="cursor: pointer; border-left: 4px solid var(--color-warning);" onclick="App.navigate('/pending-payments')">
-                    <div style="display: flex; align-items: center; gap: var(--spacing-md);">
-                        <div style="font-size: 1.5rem;">🟡</div>
-                        <div style="flex: 1;">
+                    <div class="flex items-center gap-md">
+                        <div class="emoji-lg">🟡</div>
+                        <div class="flex-1">
                             <div class="card-title">Ilmo Bixin Sugaya</div>
                             <div class="card-subtitle">${DB.getPendingPayments().length} sugaya dib u eegid</div>
                         </div>
@@ -376,9 +376,9 @@ const App = {
 
         return `
             <div class="card" style="cursor: pointer; border-left: 4px solid var(--color-primary); background: var(--bg-secondary);" onclick="App.navigate('/campaigns')">
-                <div style="display: flex; align-items: center; gap: var(--spacing-md);">
-                    <div style="font-size: 1.5rem;">✨</div>
-                    <div style="flex: 1;">
+                <div class="flex items-center gap-md">
+                    <div class="emoji-lg">✨</div>
+                    <div class="flex-1">
                         <div class="card-title">Automaatio-ehdotukset</div>
                         <div class="card-subtitle">
                             ${reminderCount > 0 ? `📩 ${reminderCount} muistutusta ` : ''}
@@ -425,7 +425,7 @@ const App = {
         const recentContributors = DB.getContributors(id).slice(0, 3);
 
         return `
-            <div style="text-align: center; margin-bottom: var(--spacing-xl);">
+            <div class="text-center mb-xl">
                 <div class="hero-icon">${Icons.render('folder', 'icon icon-xl icon-primary')}</div>
                 <h1 style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-xs); letter-spacing: -0.02em;">${campaign.name}</h1>
                 ${campaign.description ? `<p style="color: var(--text-secondary); font-size: var(--font-size-sm); max-width: 300px; margin: 0 auto var(--spacing-sm);">${campaign.description}</p>` : ''}
@@ -436,7 +436,7 @@ const App = {
             </div>
             
             <div class="card" style="cursor: default; border: none; background: linear-gradient(135deg, var(--color-primary-subtle), transparent);">
-                <div style="text-align: center; margin-bottom: var(--spacing-lg);">
+                <div class="text-center mb-lg">
                     <div style="font-size: var(--font-size-4xl); font-weight: var(--font-weight-bold); color: var(--color-primary); letter-spacing: -0.03em;">
                         ${settings.currencySymbol}${stats.collected.toLocaleString()}
                     </div>
@@ -519,14 +519,16 @@ const App = {
                 <button class="btn btn-secondary" onclick="App.copyGroupUpdate('${id}')">
                     ${Icons.render('send', 'icon icon-sm')} Kopioi Päivitys
                 </button>
+                <button class="btn btn-secondary" onclick="CSVExport.exportCampaignContributors('${id}'); Components.toast('CSV la soo dejiyey!', 'success');">
+                    ${Icons.render('download', 'icon icon-sm')} Export Tabarucayaal
+                </button>
+                <button class="btn btn-secondary" onclick="CSVExport.exportCampaignSummary('${id}'); Components.toast('Warbixin la soo dejiyey!', 'success');">
+                    ${Icons.render('document', 'icon icon-sm')} Export Warbixin
+                </button>
             </div>
-
-            <button class="btn btn-outline btn-block mb-md" onclick="App.copyDetailedList('${id}')">
-                📋 Kopioi Yksityiskohtainen Lista
-            </button>
             
-            <div style="display: flex; gap: var(--spacing-sm);">
-                <button class="btn btn-outline" style="flex: 1;" onclick="App.navigate('/edit-campaign/${id}')">
+            <div class="flex gap-sm">
+                <button class="btn btn-outline" class="flex-1" onclick="App.navigate('/edit-campaign/${id}')">
                     Wax ka bedel
                 </button>
                 <button class="btn btn-outline" style="flex: 1; color: var(--color-error); border-color: var(--color-error);" 
@@ -557,8 +559,8 @@ const App = {
         const isEdit = !!existingCampaign;
 
         return `
-            <div style="text-align: center; margin-bottom: var(--spacing-xl);">
-                <div style="font-size: 56px; margin-bottom: var(--spacing-md);">${isEdit ? '✏️' : '✨'}</div>
+            <div class="text-center mb-xl">
+                <div class="emoji-hero mb-md">${isEdit ? '✏️' : '✨'}</div>
                 <h1 style="font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold);">
                     ${isEdit ? 'Wax ka bedel Ololaha' : 'Olole Cusub'}
                 </h1>
@@ -706,8 +708,8 @@ const App = {
         const contributor = existingContributor || { name: '', phone: '', amount: '', status: 'pending' };
 
         return `
-            <div style="text-align: center; margin-bottom: var(--spacing-xl);">
-                <div style="font-size: 56px; margin-bottom: var(--spacing-md);">👤</div>
+            <div class="text-center mb-xl">
+                <div class="emoji-hero mb-md">👤</div>
                 <h1 style="font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold);">
                     ${isEdit ? 'Wax ka bedel' : 'Tabaruce Cusub'}
                 </h1>
@@ -780,7 +782,7 @@ const App = {
         const currentStatus = statusOptions.find(s => s.value === contributor.status) || statusOptions[0];
 
         return `
-            <div style="text-align: center; margin-bottom: var(--spacing-xl);">
+            <div class="text-center mb-xl">
                 <div class="contributor-avatar" style="width: 88px; height: 88px; font-size: var(--font-size-2xl); margin: 0 auto var(--spacing-lg);">
                     ${initials}
                 </div>
@@ -828,8 +830,8 @@ const App = {
                 </button>
             </div>
             
-            <div style="display: flex; gap: var(--spacing-sm);">
-                <button class="btn btn-secondary" style="flex: 1;" onclick="App.navigate('/edit-contributor/${id}')">
+            <div class="flex gap-sm">
+                <button class="btn btn-secondary" class="flex-1" onclick="App.navigate('/edit-contributor/${id}')">
                     Wax ka bedel
                 </button>
                 <button class="btn btn-outline" style="flex: 1; color: var(--color-error); border-color: var(--color-error);" 
@@ -910,8 +912,8 @@ const App = {
         const templates = DB.getTemplates();
 
         return `
-            <div style="text-align: center; margin-bottom: var(--spacing-xl);">
-                <div style="font-size: 56px; margin-bottom: var(--spacing-md);">📱</div>
+            <div class="text-center mb-xl">
+                <div class="emoji-hero mb-md">📱</div>
                 <h1 style="font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold);">Dir Fariimo</h1>
                 <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">${campaign.emoji} ${campaign.name}</p>
             </div>
@@ -954,10 +956,10 @@ const App = {
             </div>
             
             <div style="display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-lg);">
-                <button class="btn btn-ghost" style="flex: 1;" onclick="App.navigate('/templates')">
+                <button class="btn btn-ghost" class="flex-1" onclick="App.navigate('/templates')">
                     ✏️ Muokkaa pohjia
                 </button>
-                <button class="btn btn-secondary" style="flex: 1;" onclick="App.copyGroupUpdate('${campaignId}')">
+                <button class="btn btn-secondary" class="flex-1" onclick="App.copyGroupUpdate('${campaignId}')">
                     📢 Kopioi ryhmäviesti
                 </button>
             </div>
@@ -968,8 +970,8 @@ const App = {
         const templates = DB.getTemplates();
 
         return `
-            <div style="text-align: center; margin-bottom: var(--spacing-xl);">
-                <div style="font-size: 56px; margin-bottom: var(--spacing-md);">📝</div>
+            <div class="text-center mb-xl">
+                <div class="emoji-hero mb-md">📝</div>
                 <h1 style="font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold);">Message Templates</h1>
                 <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">Fariimaha automaatik ah ee WhatsApp</p>
             </div>
@@ -977,7 +979,7 @@ const App = {
             ${templates.map(t => `
                 <div class="card" onclick="App.editTemplate('${t.type}')">
                     <div style="display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
-                        <span style="font-size: 1.5rem;">${t.type === 'initial_request' ? '📩' : t.type === 'reminder' ? '🔔' : t.type === 'thank_you' ? '💚' : '📢'}</span>
+                        <span class="emoji-lg">${t.type === 'initial_request' ? '📩' : t.type === 'reminder' ? '🔔' : t.type === 'thank_you' ? '💚' : '📢'}</span>
                         <div>
                             <div class="card-title">${t.name}</div>
                             <div class="card-subtitle">${t.nameEn}</div>
@@ -1046,6 +1048,9 @@ const App = {
                 <h3 class="section-title">Maamulka Xogta</h3>
             </div>
             <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                <button class="btn btn-primary btn-block" onclick="CSVExport.exportAllCampaigns(); Components.toast('Excel la soo dejiyey!', 'success');">
+                    ${Icons.render('download', 'icon icon-md')} Export Dhammaan Ololaha (Excel)
+                </button>
                 <button class="btn btn-secondary btn-block" onclick="App.exportData()">
                     Export Data (JSON)
                 </button>
@@ -1063,8 +1068,8 @@ const App = {
         const settings = DB.getSettings();
 
         return `
-            <div style="text-align: center; margin-bottom: var(--spacing-xl);">
-                <div style="font-size: 56px; margin-bottom: var(--spacing-md);">⚙️</div>
+            <div class="text-center mb-xl">
+                <div class="emoji-hero mb-md">⚙️</div>
                 <h1 style="font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold);">Dejinta</h1>
                 <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">Habeyn app-ka</p>
             </div>
@@ -1308,7 +1313,7 @@ const App = {
                 ${actions.map(action => `
                     <div class="card" style="border-left: 4px solid var(--color-primary); background: var(--bg-secondary);">
                         <div style="display: flex; align-items: flex-start; gap: var(--spacing-md);">
-                            <div style="flex: 1;">
+                            <div class="flex-1">
                                 <div style="font-weight: var(--font-weight-bold); margin-bottom: 4px;">${action.title}</div>
                                 <div style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-md);">${action.text}</div>
                                 <button class="btn btn-primary btn-sm" onclick="App.navigate('${action.route}')">
@@ -1450,8 +1455,8 @@ const App = {
         const settings = DB.getSettings();
 
         return `
-            <div style="text-align: center; margin-bottom: var(--spacing-xl);">
-                <div style="font-size: 56px; margin-bottom: var(--spacing-md);">💰</div>
+            <div class="text-center mb-xl">
+                <div class="emoji-hero mb-md">💰</div>
                 <h1 style="font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold);">Ilmo Bixin</h1>
                 <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">Soo sheeg bixintaada si aan u xaqiijino</p>
             </div>
@@ -1498,10 +1503,10 @@ const App = {
                 <div class="form-group">
                     <label class="form-label">Caddeyn (Ikhtiyaari)</label>
                     <div style="display: flex; gap: var(--spacing-sm); margin-bottom: var(--spacing-sm);">
-                        <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="App.toggleProofType('image')">
+                        <button type="button" class="btn btn-secondary" class="flex-1" onclick="App.toggleProofType('image')">
                             📷 Sawir
                         </button>
-                        <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="App.toggleProofType('text')">
+                        <button type="button" class="btn btn-secondary" class="flex-1" onclick="App.toggleProofType('text')">
                             📝 Qoraal
                         </button>
                     </div>
@@ -1548,7 +1553,7 @@ const App = {
                 </p>
                 
                 <div style="display: inline-flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-md) var(--spacing-lg); background: var(--color-warning-bg); border-radius: var(--radius-lg); margin-bottom: var(--spacing-xl);">
-                    <span style="font-size: 1.5rem;">🟡</span>
+                    <span class="emoji-lg">🟡</span>
                     <div style="text-align: left;">
                         <div style="font-weight: var(--font-weight-semibold); color: var(--color-warning);">Xaalada: Sugaya Xaqiijin</div>
                         <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Maamulaha ayaa xaqiijin doona</div>
@@ -1642,8 +1647,8 @@ const App = {
                             ${new Date(payment.createdAt).toLocaleString('so-SO')}
                         </div>
                         
-                        <div style="display: flex; gap: var(--spacing-sm);">
-                            <button class="btn btn-primary" style="flex: 1;" onclick="App.approvePayment('${payment.id}')">
+                        <div class="flex gap-sm">
+                            <button class="btn btn-primary" class="flex-1" onclick="App.approvePayment('${payment.id}')">
                                 ✅ Aqbal
                             </button>
                             <button class="btn btn-outline" style="flex: 1; color: var(--color-error); border-color: var(--color-error);" onclick="App.rejectPayment('${payment.id}')">
@@ -1997,7 +2002,7 @@ const App = {
                 </div>
             ` : ''}
             
-            <div style="text-align: center; margin-top: var(--spacing-2xl);">
+            <div class="text-center mt-2xl">
                 <button class="public-back" onclick="App.navigate('/')" style="margin: 0 auto;">
                     <span class="public-back-icon">←</span> Guriga
                 </button>
@@ -2061,7 +2066,7 @@ const App = {
                     <div class="public-status-badge">✓ Bixintaada waa la helay</div>
                 </div>
                 
-                <div style="text-align: center; margin-top: var(--spacing-2xl);">
+                <div class="text-center mt-2xl">
                     <button class="public-back" onclick="App.navigate('/')" style="margin: 0 auto;">
                         <span class="public-back-icon">←</span> Guriga
                     </button>
@@ -2169,8 +2174,8 @@ const App = {
         const settings = DB.getSettings();
 
         return `
-            <div style="text-align: center; margin-bottom: var(--spacing-xl);">
-                <div style="font-size: 56px; margin-bottom: var(--spacing-md);">📩</div>
+            <div class="text-center mb-xl">
+                <div class="emoji-hero mb-md">📩</div>
                 <h1 style="font-size: var(--font-size-xl);">Xasuusinta</h1>
                 <p style="color: var(--text-secondary);">${campaign.emoji} ${campaign.name}</p>
             </div>
@@ -2193,7 +2198,7 @@ const App = {
                         <div class="card" style="cursor: default;">
                             <div style="display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
                                 <div class="contributor-avatar">${c.name.split(' ').map(n => n[0]).join('').slice(0, 2)}</div>
-                                <div style="flex: 1;">
+                                <div class="flex-1">
                                     <div style="font-weight: var(--font-weight-semibold);">${c.name}</div>
                                     <div style="font-size: var(--font-size-sm); color: var(--text-tertiary);">${settings.currencySymbol}${c.amount}</div>
                                 </div>
@@ -2240,8 +2245,8 @@ const App = {
         const announcement = WhatsApp.generateAnnouncement(campaign);
 
         return `
-            <div style="text-align: center; margin-bottom: var(--spacing-xl);">
-                <div style="font-size: 56px; margin-bottom: var(--spacing-md);">🔗</div>
+            <div class="text-center mb-xl">
+                <div class="emoji-hero mb-md">🔗</div>
                 <h1 style="font-size: var(--font-size-xl);">Wadaag Linkiga</h1>
                 <p style="color: var(--text-secondary);">${campaign.emoji} ${campaign.name}</p>
             </div>
@@ -2295,8 +2300,8 @@ const App = {
         if (!campaign) return this.view404();
 
         return `
-            <div style="text-align: center; margin-bottom: var(--spacing-xl);">
-                <div style="font-size: 56px; margin-bottom: var(--spacing-md);">🔒</div>
+            <div class="text-center mb-xl">
+                <div class="emoji-hero mb-md">🔒</div>
                 <h1 style="font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold);">PIN-ka Maaraynta</h1>
                 <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">${campaign.emoji} ${campaign.name}</p>
                 <p style="color: var(--text-tertiary); font-size: var(--font-size-xs); margin-top: var(--spacing-sm);">Fadlan geli PIN-ka si aad u maareyso ololaha.</p>
