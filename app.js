@@ -80,10 +80,11 @@ const App = {
         let route = '/' + (path || '');
         let params = { ...queryParams };
 
+        // If there are additional path segments, store them as params
+        // but don't modify the route itself
         if (rest.length) {
             params.id = rest[0];
             if (rest[1]) {
-                route += '/' + rest[0];
                 params.subId = rest[1];
             }
         }
@@ -119,8 +120,20 @@ const App = {
         // Check if route is protected
         const protectedRoutes = ['/send-messages', '/reminders', '/edit-campaign', '/campaign-contributors', '/add-contributor', '/edit-contributor'];
         if (protectedRoutes.includes(route) && params.id) {
-            if (!this.sessions[params.id]) {
+            let campaignId = params.id;
+
+            // For contributor routes, resolve the campaign ID
+            if (route === '/edit-contributor') {
+                const contributor = DB.getContributor(params.id);
+                if (contributor) {
+                    campaignId = contributor.campaignId;
+                }
+            }
+            // For add-contributor, params.id is already the campaign ID
+
+            if (!this.sessions[campaignId]) {
                 route = '/auth';
+                params.id = campaignId; // Update params to use campaign ID for auth
             }
         }
 
@@ -840,6 +853,18 @@ const App = {
             );
         }
 
+        // Calculate stats for filters
+        const allContributors = [...contributors];
+        const paidCount = allContributors.filter(c => c.status === 'paid').length;
+        const pendingCount = allContributors.filter(c => c.status === 'pending').length;
+
+        // Apply filter
+        if (this.activeFilter === 'paid') {
+            contributors = contributors.filter(c => c.status === 'paid');
+        } else if (this.activeFilter === 'pending') {
+            contributors = contributors.filter(c => c.status === 'pending');
+        }
+
         // Apply search
         if (this.searchQuery) {
             const query = this.searchQuery.toLowerCase();
@@ -852,15 +877,28 @@ const App = {
         // Sort by name
         contributors.sort((a, b) => a.name.localeCompare(b.name));
 
+        const filters = [
+            { value: 'all', label: 'Dhammaan', count: allContributors.length },
+            { value: 'paid', label: 'Bixiyey', count: paidCount },
+            { value: 'pending', label: 'Sugaya', count: pendingCount }
+        ];
+
         return `
             <div class="section-header">
                 <h2 class="section-title">Dhammaan Tabarucayaasha</h2>
-                <span style="color: var(--text-tertiary); font-size: var(--font-size-sm);">${contributors.length} qof</span>
+                <span style="color: var(--text-tertiary); font-size: var(--font-size-sm);">${allContributors.length} qof</span>
             </div>
             
             ${Components.searchBar('Raadi magac ama telefoon...', 'App.handleSearch')}
+            ${Components.filterTabs(filters, this.activeFilter, 'App.setFilter')}
             
-            ${contributors.map(c => Components.contributorRow(c, true)).join('')}
+            ${contributors.length ?
+                contributors.map(c => Components.contributorRow(c, true)).join('') :
+                `<div class="empty-state" style="padding: var(--spacing-xl);">
+                    <div style="font-size: 48px; margin-bottom: var(--spacing-md);">${Icons.render('users', 'icon icon-xl icon-primary')}</div>
+                    <div style="color: var(--text-secondary);">Ma jiro tabaruce ${this.activeFilter !== 'all' ? 'la helay' : ''}</div>
+                </div>`
+            }
         `;
     },
 
