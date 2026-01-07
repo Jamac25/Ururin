@@ -1,0 +1,84 @@
+{
+  "shops": [
+    {
+      "id": "shop_1",
+      "name": "Axmed Shop",
+      "currency": "USD",
+      "logo": null
+    }
+  ],
+  "customers": [
+    {
+      "id": "cus_1",
+      "shopId": "shop_1",
+      "name": "Cabdi Axmed",
+      "phone": "+252619000111",
+      "creditLimit": 50,
+      "avatar": null,
+      "createdAt": "2026-01-07T18:22:04.808Z"
+    },
+    {
+      "id": "cus_2",
+      "shopId": "shop_1",
+      "name": "Maxamed Ali",
+      "phone": "+252619000222",
+      "creditLimit": 30,
+      "avatar": null,
+      "createdAt": "2026-01-07T18:22:04.809Z"
+    }
+  ],
+  "debts": [
+    {
+      "id": "debt_1",
+      "shopId": "shop_1",
+      "customerId": "cus_1",
+      "createdAt": "2024-04-09T10:00:00.000Z",
+      "dueAt": "2024-04-20T10:00:00.000Z",
+      "status": "PAID",
+      "items": [
+        {
+          "name": "Sonkor",
+          "qty": 2,
+          "unitPrice": 6
+        },
+        {
+          "name": "Shaah",
+          "qty": 1,
+          "unitPrice": 2
+        }
+      ],
+      "approvedAt": "2024-04-09T11:00:00.000Z",
+      "paidAt": "2026-01-07T18:28:16.611Z",
+      "totalPaid": 14
+    },
+    {
+      "id": "debt_2",
+      "shopId": "shop_1",
+      "customerId": "cus_1",
+      "createdAt": "2024-04-11T10:00:00.000Z",
+      "dueAt": "2024-04-15T10:00:00.000Z",
+      "status": "OVERDUE",
+      "items": [
+        {
+          "name": "Bariis",
+          "qty": 3,
+          "unitPrice": 3.67
+        }
+      ],
+      "approvedAt": null,
+      "paidAt": null,
+      "totalPaid": 0
+    }
+  ],
+  "payments": [
+    {
+      "id": "pay_Wul-idH_ve",
+      "debtId": "debt_1",
+      "customerId": "cus_1",
+      "amount": 14,
+      "note": "Full payment",
+      "createdAt": "2026-01-07T18:28:16.611Z"
+    }
+  ],
+  "users": []
+}

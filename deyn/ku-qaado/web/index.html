@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="so">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ku Qaado - Maamul deynta ganacsigaaga</title>
+  <meta name="description"
+    content="Digitaalinen vihko luotoille. Hallitse asiakkaiden velkoja helposti WhatsApp-integraatiolla." />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #fff;
+      color: #111827;
+      line-height: 1.6;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+      color: white;
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: drift 20s linear infinite;
+    }
+
+    @keyframes drift {
+      0% {
+        transform: translate(0, 0)
+      }
+
+      100% {
+        transform: translate(50px, 50px)
+      }
+    }
+
+    .hero-content {
+      max-width: 1200px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo-big {
+      width: 120px;
+      height: 120px;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 30px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 24px;
+      font-size: 64px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      font-size: 56px;
+      font-weight: 900;
+      margin-bottom: 16px;
+      letter-spacing: -0.03em;
+    }
+
+    .tagline {
+      font-size: 24px;
+      opacity: 0.95;
+      margin-bottom: 48px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 18px 36px;
+      border-radius: 16px;
+      font-weight: 800;
+      font-size: 18px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: white;
+      color: #0d9488;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Benefits */
+    .benefits {
+      max-width: 1200px;
+      margin: -80px auto 80px;
+      padding: 0 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .benefit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .benefit-card {
+      background: white;
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s;
+    }
+
+    .benefit-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+    }
+
+    .benefit-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .benefit-card h3 {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: #1f2937;
+    }
+
+    .benefit-card p {
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    /* How it works */
+    .how-it-works {
+      background: #f9fafb;
+      padding: 80px 20px;
+    }
+
+    .how-content {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      font-size: 42px;
+      font-weight: 900;
+      text-align: center;
+      margin-bottom: 16px;
+      color: #1f2937;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: #6b7280;
+      font-size: 18px;
+      margin-bottom: 60px;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 32px;
+    }
+
+    .step {
+      text-align: center;
+    }
+
+    .step-number {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: 28px;
+      font-weight: 900;
+      margin: 0 auto 16px;
+    }
+
+    .step h4 {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .step p {
+      color: #6b7280;
+    }
+
+    /* Social proof */
+    .social-proof {
+      padding: 80px 20px;
+    }
+
+    .proof-content {
+      max-width: 1000px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .testimonial {
+      background: white;
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      margin-bottom: 24px;
+    }
+
+    .testimonial-text {
+      font-size: 18px;
+      font-style: italic;
+      color: #1f2937;
+      margin-bottom: 16px;
+    }
+
+    .testimonial-author {
+      font-weight: 700;
+      color: #0d9488;
+    }
+
+    /* Footer */
+    .footer {
+      background: #1f2937;
+      color: white;
+      padding: 60px 20px 40px;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    .footer-section h5 {
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    .footer-section a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      display: block;
+      margin-bottom: 8px;
+      transition: color 0.2s;
+    }
+
+    .footer-section a:hover {
+      color: white;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 20px;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 40px;
+      }
+
+      .tagline {
+        font-size: 18px;
+      }
+
+      .btn {
+        padding: 14px 24px;
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-content">
+      <div class="logo-big">🏪</div>
+      <h1>Ku Qaado</h1>
+      <p class="tagline">Maamul deynta ganacsigaaga – Digitaalinen vihko luotoille</p>
+      <div class="cta-buttons">
+        <a href="/download.html" class="btn btn-primary">
+          <span>📱</span>
+          <span>Bilow isticmaalka</span>
+        </a>
+        <a href="/demo.html" class="btn btn-secondary">
+          <span>▶️</span>
+          <span>Eeg demo</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Benefits -->
+  <div class="benefits">
+    <div class="benefit-grid">
+      <div class="benefit-card">
+        <div class="benefit-icon">💰</div>
+        <h3>Menetät vähemmän rahaa</h3>
+        <p>Automaattinen luottorajan valvonta estää liiallisen luotonannon. Näet heti erääntyneet velat.</p>
+      </div>
+
+      <div class="benefit-card">
+        <div class="benefit-icon">⚡</div>
+        <h3>Asiakkaat maksavat nopeammin</h3>
+        <p>WhatsApp-muistutukset ja selkeä velkakirja motivoivat asiakkaita maksamaan ajallaan.</p>
+      </div>
+
+      <div class="benefit-card">
+        <div class="benefit-icon">🤝</div>
+        <h3>Riidat vähenevät</h3>
+        <p>Asiakas hyväksyy jokaisen velan digitaalisesti. Kaikki on läpinäkyvää ja dokumentoitua.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <div class="how-it-works">
+    <div class="how-content">
+      <h2 class="section-title">Sidee u shaqeyso</h2>
+      <p class="section-subtitle">3 yksinkertaista askelta</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <h4>👥 Ku dar macmiil</h4>
+          <p>Lisää asiakas nimellä, puhelinnumerolla ja luottorajalla</p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">2</div>
+          <h4>💰 Ku dar deyn</h4>
+          <p>Luo velka tuotteineen ja eräpäivällä. Summa lasketaan automaattisesti.</p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">3</div>
+          <h4>📱 Dir link WhatsApp</h4>
+          <p>Lähetä asiakkaalle linkki. Asiakas hyväksyy yhdellä klikkauksella.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Social Proof -->
+  <div class="social-proof">
+    <div class="proof-content">
+      <h2 class="section-title">Kauppiaat rakastavat Ku Qaado</h2>
+      <p class="section-subtitle">Pilottikauppojen kokemuksia</p>
+
+      <div class="testimonial">
+        <p class="testimonial-text">"Ennen menetin paljon rahaa kun en muistanut kuka oli velkaa. Nyt kaikki on tallessa
+          ja asiakkaat maksavat ajallaan."</p>
+        <p class="testimonial-author">— Axmed, Hargeisa</p>
+      </div>
+
+      <div class="testimonial">
+        <p class="testimonial-text">"Asiakkaat arvostavat läpinäkyvyyttä. He näkevät tarkalleen mitä ovat ostaneet ja
+          voivat hyväksyä sen. Ei enää riitoja!"</p>
+        <p class="testimonial-author">— Fadumo, Berbera</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-content">
+      <div class="footer-grid">
+        <div class="footer-section">
+          <h5>Tuote</h5>
+          <a href="/demo.html">Demo</a>
+          <a href="/pricing.html">Hinnoittelu</a>
+          <a href="/download.html">Lataa</a>
+        </div>
+
+        <div class="footer-section">
+          <h5>Tuki</h5>
+          <a href="/faq.html">UKK</a>
+          <a href="/contact.html">Ota yhteyttä</a>
+        </div>
+
+        <div class="footer-section">
+          <h5>Yritys</h5>
+          <a href="/terms.html">Käyttöehdot</a>
+          <a href="/privacy.html">Tietosuoja</a>
+        </div>
+
+        <div class="footer-section">
+          <h5>Ku Qaado</h5>
+          <p style="color:rgba(255,255,255,0.8); font-size:14px;">Digitaalinen vihko luotoille somaliankielisille
+            kauppiaille.</p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2024 Ku Qaado. Made with ❤️ for Somali-speaking merchants.</p>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

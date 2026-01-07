@@ -657,7 +657,7 @@ const App = {
             </div>
             
             <div class="flex gap-sm">
-                <button class="btn btn-outline" class="flex-1" onclick="App.navigate('/edit-campaign/${id}')">
+                <button class="btn btn-outline flex-1" onclick="App.navigate('/edit-campaign/${id}')">
                     Wax ka bedel
                 </button>
                 <button class="btn btn-outline" style="flex: 1; color: var(--color-error); border-color: var(--color-error);" 
@@ -960,7 +960,7 @@ const App = {
             </div>
             
             <div class="flex gap-sm">
-                <button class="btn btn-secondary" class="flex-1" onclick="App.navigate('/edit-contributor/${id}')">
+                <button class="btn btn-secondary flex-1" onclick="App.navigate('/edit-contributor/${id}')">
                     Wax ka bedel
                 </button>
                 <button class="btn btn-outline" style="flex: 1; color: var(--color-error); border-color: var(--color-error);" 
@@ -1085,10 +1085,10 @@ const App = {
             </div>
             
             <div style="display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-lg);">
-                <button class="btn btn-ghost" class="flex-1" onclick="App.navigate('/templates')">
+                <button class="btn btn-ghost flex-1" onclick="App.navigate('/templates')">
                     ✏️ Muokkaa pohjia
                 </button>
-                <button class="btn btn-secondary" class="flex-1" onclick="App.copyGroupUpdate('${campaignId}')">
+                <button class="btn btn-secondary flex-1" onclick="App.copyGroupUpdate('${campaignId}')">
                     📢 Kopioi ryhmäviesti
                 </button>
             </div>
@@ -1668,10 +1668,10 @@ const App = {
                 <div class="form-group">
                     <label class="form-label">Caddeyn (Ikhtiyaari)</label>
                     <div style="display: flex; gap: var(--spacing-sm); margin-bottom: var(--spacing-sm);">
-                        <button type="button" class="btn btn-secondary" class="flex-1" onclick="App.toggleProofType('image')">
+                        <button type="button" class="btn btn-secondary flex-1" onclick="App.toggleProofType('image')">
                             📷 Sawir
                         </button>
-                        <button type="button" class="btn btn-secondary" class="flex-1" onclick="App.toggleProofType('text')">
+                        <button type="button" class="btn btn-secondary flex-1" onclick="App.toggleProofType('text')">
                             📝 Qoraal
                         </button>
                     </div>
@@ -1813,7 +1813,7 @@ const App = {
                         </div>
                         
                         <div class="flex gap-sm">
-                            <button class="btn btn-primary" class="flex-1" onclick="App.approvePayment('${payment.id}')">
+                            <button class="btn btn-primary flex-1" onclick="App.approvePayment('${payment.id}')">
                                 ✅ Aqbal
                             </button>
                             <button class="btn btn-outline" style="flex: 1; color: var(--color-error); border-color: var(--color-error);" onclick="App.rejectPayment('${payment.id}')">
