@@ -144,29 +144,27 @@ const App = {
         // Initialize authentication first
         await Auth.init();
 
-        // Check if user is authenticated
-        if (!Auth.isAuthenticated()) {
-            // Redirect to login unless on public routes
-            const hash = window.location.hash;
-            const publicRoutes = ['/join', '/confirm-payment', '/payment-success'];
-            const isPublicRoute = publicRoutes.some(route => hash.includes(route));
-
-            if (!isPublicRoute) {
-                window.location.hash = '#/login';
-                return;
-            }
-        }
-
         // Listen for auth state changes
         Auth.onAuthChange((user, profile) => {
             if (!user) {
                 // User logged out, redirect to login
                 window.location.hash = '#/login';
+                this.handleRoute(); // Ensure login page renders
             } else {
                 // User logged in, reload current view
                 this.handleRoute();
             }
         });
+
+        // Check if user is authenticated
+        const hash = window.location.hash;
+        const publicRoutes = ['/join', '/confirm-payment', '/payment-success'];
+        const isPublicRoute = publicRoutes.some(route => hash.includes(route));
+
+        if (!Auth.isAuthenticated() && !isPublicRoute) {
+            window.location.hash = '#/login';
+            // Don't return - continue initialization
+        }
 
         // Load theme
         const settings = DB.getSettings();
@@ -192,12 +190,11 @@ const App = {
             settingsBtn.addEventListener('click', () => this.navigate('/settings'));
         }
 
-        // Initial route
+        // Initial route - ALWAYS render current route
         if (!window.location.hash) {
             window.location.hash = '#/';
-        } else {
-            this.handleRoute();
         }
+        this.handleRoute(); // Always call this to render the page
 
         // Register Service Worker for PWA
         if ('serviceWorker' in navigator) {
