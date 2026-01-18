@@ -140,7 +140,34 @@ const App = {
     // Initialization
     // ========================================
 
-    init() {
+    async init() {
+        // Initialize authentication first
+        await Auth.init();
+
+        // Check if user is authenticated
+        if (!Auth.isAuthenticated()) {
+            // Redirect to login unless on public routes
+            const hash = window.location.hash;
+            const publicRoutes = ['/join', '/confirm-payment', '/payment-success'];
+            const isPublicRoute = publicRoutes.some(route => hash.includes(route));
+
+            if (!isPublicRoute) {
+                window.location.hash = '#/login';
+                return;
+            }
+        }
+
+        // Listen for auth state changes
+        Auth.onAuthChange((user, profile) => {
+            if (!user) {
+                // User logged out, redirect to login
+                window.location.hash = '#/login';
+            } else {
+                // User logged in, reload current view
+                this.handleRoute();
+            }
+        });
+
         // Load theme
         const settings = DB.getSettings();
         if (settings.theme === 'dark') {
@@ -151,7 +178,7 @@ const App = {
         Notifications.init();
 
         // Ensure all campaigns have codes
-        this.ensureCampaignCodes();
+        await this.ensureCampaignCodes();
 
         // Setup router
         window.addEventListener('hashchange', () => this.handleRoute());
@@ -338,7 +365,10 @@ const App = {
             '/reminders': () => this.viewReminders(params.id),
             '/share': () => this.viewShare(params.id),
             '/auth': () => this.viewAuth(params.id),
-            '/logs': () => this.viewLogs(params.id)
+            '/logs': () => this.viewLogs(params.id),
+            '/login': () => this.viewLogin(),
+            '/register': () => this.viewRegister(),
+            '/profile': () => this.viewProfile()
         };
 
         const viewFn = routes[route];
@@ -2579,6 +2609,255 @@ const App = {
                 </div>
             `).join('')}
         `;
+    },
+
+    // ========================================
+    // Authentication Views
+    // ========================================
+
+    viewLogin() {
+        return `
+            <div class="text-center mb-xl">
+                <img src="logo.png" alt="Ololeeye" style="width: 80px; height: 80px; margin: 0 auto var(--spacing-lg);">
+                <h1 style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-xs);">Soo dhawoow</h1>
+                <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">Gal akoonkaaga si aad u maarayso ololahaaga</p>
+            </div>
+
+            <form onsubmit="App.handleLogin(event); return false;" class="card">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" id="login-email" class="form-input" placeholder="example@email.com" required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="login-password" class="form-input" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block" id="login-btn">
+                    ${Icons.render('login', 'icon icon-sm')} Gal
+                </button>
+
+                <div style="text-align: center; margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px solid var(--border-color);">
+                    <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-sm);">
+                        Ma haysatid akoon?
+                    </p>
+                    <button type="button" class="btn btn-secondary btn-block" onclick="App.navigate('/register')">
+                        Samee Akoon Cusub
+                    </button>
+                </div>
+            </form>
+
+            <div style="text-align: center; margin-top: var(--spacing-md);">
+                <a href="#" onclick="App.handleForgotPassword(); return false;" style="color: var(--color-primary); font-size: var(--font-size-sm);">
+                    Ilaawe Password?
+                </a>
+            </div>
+        `;
+    },
+
+    viewRegister() {
+        return `
+            <div class="text-center mb-xl">
+                <img src="logo.png" alt="Ololeeye" style="width: 80px; height: 80px; margin: 0 auto var(--spacing-lg);">
+                <h1 style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-xs);">Samee Akoon</h1>
+                <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">Bilow ururinta lacagaha si fudud</p>
+            </div>
+
+            <form onsubmit="App.handleRegister(event); return false;" class="card">
+                <div class="form-group">
+                    <label class="form-label">Magaca Oo Dhan</label>
+                    <input type="text" id="register-name" class="form-input" placeholder="Magacaaga" required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" id="register-email" class="form-input" placeholder="example@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="register-password" class="form-input" placeholder="Ugu yaraan 6 xaraf" required minlength="6">
+                    <div style="font-size: var(--font-size-xs); color: var(--text-tertiary); margin-top: 4px;">
+                        Ugu yaraan 6 xaraf
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block" id="register-btn">
+                    ${Icons.render('userPlus', 'icon icon-sm')} Samee Akoon
+                </button>
+
+                <div style="text-align: center; margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px solid var(--border-color);">
+                    <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-sm);">
+                        Hore ayaad u haysatay akoon?
+                    </p>
+                    <button type="button" class="btn btn-secondary btn-block" onclick="App.navigate('/login')">
+                        Gal Akoonkaaga
+                    </button>
+                </div>
+            </form>
+        `;
+    },
+
+    viewProfile() {
+        const user = Auth.getCurrentUser();
+        const profile = Auth.getCurrentProfile();
+
+        if (!user) {
+            this.navigate('/login');
+            return '';
+        }
+
+        return `
+            <div class="text-center mb-xl">
+                <div class="contributor-avatar" style="width: 88px; height: 88px; font-size: var(--font-size-2xl); margin: 0 auto var(--spacing-lg);">
+                    ${profile?.full_name ? profile.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'U'}
+                </div>
+                <h1 style="font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold);">Profile</h1>
+                <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">${user.email}</p>
+            </div>
+
+            <div class="card">
+                <h3 class="section-title">Macluumaadka Shakhsiga</h3>
+                
+                <div class="form-group">
+                    <label class="form-label">Magaca Oo Dhan</label>
+                    <input type="text" id="profile-name" class="form-input" value="${profile?.full_name || ''}" placeholder="Magacaaga">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Telefoon (Ikhtiyaari)</label>
+                    <input type="tel" id="profile-phone" class="form-input" value="${profile?.phone || ''}" placeholder="+252...">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" value="${user.email}" disabled style="opacity: 0.6;">
+                    <div style="font-size: var(--font-size-xs); color: var(--text-tertiary); margin-top: 4px;">
+                        Email-ka lama bedeli karo
+                    </div>
+                </div>
+
+                <button class="btn btn-primary btn-block" onclick="App.handleUpdateProfile()">
+                    ${Icons.render('save', 'icon icon-sm')} Kaydi Isbeddelka
+                </button>
+            </div>
+
+            <div class="card" style="margin-top: var(--spacing-lg);">
+                <h3 class="section-title">Xogta Xisaabta</h3>
+                
+                <div style="display: flex; justify-content: space-between; padding: var(--spacing-md) 0; border-bottom: 1px solid var(--border-color);">
+                    <span style="color: var(--text-secondary);">La diiwaangeliyey</span>
+                    <span style="font-weight: var(--font-weight-semibold);">
+                        ${new Date(user.created_at).toLocaleDateString('so-SO')}
+                    </span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; padding: var(--spacing-md) 0;">
+                    <span style="color: var(--text-secondary);">User ID</span>
+                    <span style="font-family: monospace; font-size: var(--font-size-xs); color: var(--text-tertiary);">
+                        ${user.id.slice(0, 8)}...
+                    </span>
+                </div>
+            </div>
+
+            <div style="margin-top: var(--spacing-xl);">
+                <button class="btn btn-outline btn-block" style="color: var(--color-error); border-color: var(--color-error);" onclick="App.handleLogout()">
+                    ${Icons.render('logout', 'icon icon-sm')} Ka Bax
+                </button>
+            </div>
+        `;
+    },
+
+    // ========================================
+    // Authentication Handlers
+    // ========================================
+
+    async handleLogin(event) {
+        event.preventDefault();
+
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        const btn = document.getElementById('login-btn');
+
+        btn.disabled = true;
+        btn.textContent = 'Soo galaya...';
+
+        const result = await Auth.signIn(email, password);
+
+        if (result.success) {
+            Components.toast('Waad soo gashay!', 'success');
+            this.navigate('/');
+        } else {
+            Components.toast(result.error || 'Login failed', 'error');
+            btn.disabled = false;
+            btn.innerHTML = `${Icons.render('login', 'icon icon-sm')} Gal`;
+        }
+    },
+
+    async handleRegister(event) {
+        event.preventDefault();
+
+        const name = document.getElementById('register-name').value;
+        const email = document.getElementById('register-email').value;
+        const password = document.getElementById('register-password').value;
+        const btn = document.getElementById('register-btn');
+
+        btn.disabled = true;
+        btn.textContent = 'Samaynaya...';
+
+        const result = await Auth.signUp(email, password, name);
+
+        if (result.success) {
+            Components.toast('Akoon la sameeyey! Fadlan hubi email-kaaga.', 'success');
+            this.navigate('/login');
+        } else {
+            Components.toast(result.error || 'Registration failed', 'error');
+            btn.disabled = false;
+            btn.innerHTML = `${Icons.render('userPlus', 'icon icon-sm')} Samee Akoon`;
+        }
+    },
+
+    async handleLogout() {
+        if (!confirm('Ma hubtaa inaad ka baxayso?')) return;
+
+        const result = await Auth.signOut();
+
+        if (result.success) {
+            Components.toast('Waad ka baxday', 'success');
+            this.navigate('/login');
+        } else {
+            Components.toast('Khalad ayaa dhacay', 'error');
+        }
+    },
+
+    async handleUpdateProfile() {
+        const name = document.getElementById('profile-name').value;
+        const phone = document.getElementById('profile-phone').value;
+
+        const result = await Auth.updateProfile({
+            full_name: name,
+            phone: phone
+        });
+
+        if (result.success) {
+            Components.toast('Profile la cusboonaysiiyey!', 'success');
+        } else {
+            Components.toast(result.error || 'Update failed', 'error');
+        }
+    },
+
+    async handleForgotPassword() {
+        const email = prompt('Geli email-kaaga:');
+        if (!email) return;
+
+        const result = await Auth.resetPassword(email);
+
+        if (result.success) {
+            Components.toast('Email la soo diray! Hubi inbox-kaaga.', 'success');
+        } else {
+            Components.toast(result.error || 'Failed to send email', 'error');
+        }
     }
 };
 
