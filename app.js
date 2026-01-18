@@ -158,7 +158,7 @@ const App = {
 
         // Check if user is authenticated
         const hash = window.location.hash;
-        const publicRoutes = ['/join', '/confirm-payment', '/payment-success'];
+        const publicRoutes = ['/join', '/confirm-payment', '/payment-success', '/login', '/register'];
         const isPublicRoute = publicRoutes.some(route => hash.includes(route));
 
         if (!Auth.isAuthenticated() && !isPublicRoute) {
