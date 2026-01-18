@@ -160,7 +160,10 @@ const App = {
         document.getElementById('theme-toggle').addEventListener('click', () => this.toggleTheme());
 
         // Settings button
-        document.getElementById('settings-btn').addEventListener('click', () => this.navigate('/settings'));
+        const settingsBtn = document.getElementById('settings-btn');
+        if (settingsBtn) {
+            settingsBtn.addEventListener('click', () => this.navigate('/settings'));
+        }
 
         // Initial route
         if (!window.location.hash) {
@@ -169,7 +172,41 @@ const App = {
             this.handleRoute();
         }
 
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('🚀 Service Worker registered:', reg.scope))
+                    .catch(err => console.log('❌ Service Worker failed:', err));
+            });
+        }
+
         console.log('🌙 Ololeeye initialized!');
+    },
+
+    setLoading(isLoading) {
+        const app = document.getElementById('app');
+        if (isLoading) {
+            app.classList.add('loading-state');
+        } else {
+            app.classList.remove('loading-state');
+        }
+    },
+
+    triggerConfetti() {
+        const colors = ['#059669', '#10b981', '#34d399', '#f59e0b', '#fbbf24'];
+        for (let i = 0; i < 50; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.width = Math.random() * 10 + 5 + 'px';
+            confetti.style.height = confetti.style.width;
+            confetti.style.animation = `confetti-fall ${Math.random() * 2 + 2}s linear forwards`;
+            confetti.style.animationDelay = Math.random() * 1 + 's';
+            document.body.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 5000);
+        }
     },
 
     ensureCampaignCodes() {
@@ -192,88 +229,87 @@ const App = {
     // ========================================
 
     handleRoute() {
-        const hash = window.location.hash.slice(1) || '/';
-        const [pathPart, queryPart] = hash.split('?');
-        const [path, ...rest] = pathPart.split('/').filter(Boolean);
+        try {
+            const hash = window.location.hash.slice(1) || '/';
+            const [pathPart, queryPart] = hash.split('?');
+            const [path, ...rest] = pathPart.split('/').filter(Boolean);
 
-        // Parse query parameters
-        const queryParams = {};
-        if (queryPart) {
-            queryPart.split('&').forEach(p => {
-                const [key, val] = p.split('=');
-                queryParams[key] = decodeURIComponent(val || '');
-            });
-        }
-
-        // Parse route and params
-        let route = '/' + (path || '');
-        let params = { ...queryParams };
-
-        // If there are additional path segments, store them as params
-        // but don't modify the route itself
-        if (rest.length) {
-            params.id = rest[0];
-            if (rest[1]) {
-                params.subId = rest[1];
+            // Parse query parameters
+            const queryParams = {};
+            if (queryPart) {
+                queryPart.split('&').forEach(p => {
+                    const [key, val] = p.split('=');
+                    queryParams[key] = decodeURIComponent(val || '');
+                });
             }
-        }
 
-        this.currentRoute = route;
-        this.currentParams = params;
+            // Parse route and params
+            let route = '/' + (path || '');
+            let params = { ...queryParams };
 
-        // Reset filters when changing routes
-        if (route !== this.lastRoute) {
-            this.searchQuery = '';
-            this.activeFilter = 'all';
-        }
-        this.lastRoute = route;
-
-        // Toggle public mode for minimal UI on public pages
-        const publicRoutes = ['/join', '/join-success', '/confirm-payment'];
-        if (publicRoutes.includes(route)) {
-            document.body.classList.add('public-mode');
-        } else {
-            document.body.classList.remove('public-mode');
-        }
-
-        // Toggle welcome mode for landing page
-        if (route === '/welcome') {
-            document.body.classList.add('welcome-mode');
-        } else {
-            document.body.classList.remove('welcome-mode');
-        }
-
-        // Update navigation
-        this.updateNavigation(route);
-
-        // Check if route is protected
-        const protectedRoutes = ['/send-messages', '/reminders', '/edit-campaign', '/campaign-contributors', '/add-contributor', '/edit-contributor'];
-        if (protectedRoutes.includes(route) && params.id) {
-            let campaignId = params.id;
-
-            // For contributor routes, resolve the campaign ID
-            if (route === '/edit-contributor') {
-                const contributor = DB.getContributor(params.id);
-                if (contributor) {
-                    campaignId = contributor.campaignId;
+            if (rest.length) {
+                params.id = rest[0];
+                if (rest[1]) {
+                    params.subId = rest[1];
                 }
             }
-            // For add-contributor, params.id is already the campaign ID
 
-            if (!this.sessions[campaignId]) {
-                route = '/auth';
-                params.id = campaignId; // Update params to use campaign ID for auth
+            this.currentRoute = route;
+            this.currentParams = params;
+
+            // Reset filters when changing routes
+            if (route !== this.lastRoute) {
+                this.searchQuery = '';
+                this.activeFilter = 'all';
             }
+            this.lastRoute = route;
+
+            // Page transitions and Rendering
+            const mainContent = document.getElementById('main-content');
+            if (mainContent) {
+                mainContent.style.opacity = '0';
+                mainContent.style.transform = 'translateY(10px)';
+
+                setTimeout(() => {
+                    try {
+                        // Toggle public modes
+                        const publicRoutes = ['/join', '/join-success', '/confirm-payment'];
+                        document.body.classList.toggle('public-mode', publicRoutes.includes(route));
+                        document.body.classList.toggle('welcome-mode', route === '/welcome');
+
+                        this.updateNavigation(route);
+
+                        // Auth check
+                        const protectedRoutes = ['/send-messages', '/reminders', '/edit-campaign', '/campaign-contributors', '/add-contributor', '/edit-contributor'];
+                        if (protectedRoutes.includes(route) && params.id) {
+                            let campaignId = params.id;
+                            if (route === '/edit-contributor') {
+                                const contributor = DB.getContributor(params.id);
+                                if (contributor) campaignId = contributor.campaignId;
+                            }
+                            if (!this.sessions[campaignId]) {
+                                route = '/auth';
+                                params.id = campaignId;
+                            }
+                        }
+
+                        mainContent.innerHTML = this.renderView(route, params);
+                        window.scrollTo(0, 0);
+
+                        mainContent.style.opacity = '1';
+                        mainContent.style.transform = 'translateY(0)';
+                    } catch (e) {
+                        console.error('Render error:', e);
+                        mainContent.innerHTML = `<div class="p-xl text-center"><h3>Khalad ayaa dhacay</h3><button onclick="location.hash='/'" class="btn btn-primary mt-md">Back to Home</button></div>`;
+                        mainContent.style.opacity = '1';
+                        mainContent.style.transform = 'translateY(0)';
+                    }
+                }, 50);
+            }
+        } catch (error) {
+            console.error('Routing error:', error);
+            window.location.hash = '#/';
         }
-
-        // Render view with loading state
-        const mainContent = document.getElementById('main-content');
-
-        setTimeout(() => {
-            mainContent.innerHTML = this.renderView(route, params);
-            mainContent.classList.add('page-enter');
-            setTimeout(() => mainContent.classList.remove('page-enter'), 300);
-        }, 50);
     },
 
     renderView(route, params) {
@@ -450,7 +486,7 @@ const App = {
                 <div class="subtitle">ka mid ah ${settings.currencySymbol}${totalGoal.toLocaleString()} hadafka</div>
             </div>
             
-            <div class="stats-grid" style="margin-bottom: var(--spacing-xl);">
+            <div class="stats-grid mb-xl">
                 <div class="stat-item">
                     <div class="stat-value">${campaigns.length}</div>
                     <div class="stat-label">Ololaha</div>
@@ -471,14 +507,14 @@ const App = {
             ${campaigns.slice(0, 5).map(c => Components.campaignCard(c)).join('')}
             
             ${DB.getPendingPayments().length ? `
-                <div class="card" style="cursor: pointer; border-left: 4px solid var(--color-warning);" onclick="App.navigate('/pending-payments')">
+                <div class="card cursor-pointer border-l-warning" onclick="App.navigate('/pending-payments')">
                     <div class="flex items-center gap-md">
                         <div class="emoji-lg">🟡</div>
                         <div class="flex-1">
                             <div class="card-title">Ilmo Bixin Sugaya</div>
                             <div class="card-subtitle">${DB.getPendingPayments().length} sugaya dib u eegid</div>
                         </div>
-                        <div style="color: var(--text-tertiary);">→</div>
+                        <div class="text-tertiary">→</div>
                     </div>
                 </div>
             ` : ''}
@@ -2091,65 +2127,74 @@ const App = {
 
     submitJoin(event) {
         event.preventDefault();
-        const form = event.target;
-        const data = new FormData(form);
 
-        let phone = data.get('phone').replace(/\D/g, '');
-        if (phone.startsWith('0')) phone = '252' + phone.substring(1);
-        if (!phone.startsWith('252')) phone = '252' + phone;
+        try {
+            const form = event.target;
+            const data = new FormData(form);
 
-        if (phone.length < 9) {
-            Components.toast('Fadlan geli lambar telefoon sax ah', 'error');
-            return;
+            let phone = data.get('phone').replace(/\D/g, '');
+            if (phone.startsWith('0')) phone = '252' + phone.substring(1);
+            if (!phone.startsWith('252')) phone = '252' + phone;
+
+            if (phone.length < 9) {
+                Components.toast('Fadlan geli lambar telefoon sax ah', 'error');
+                return;
+            }
+
+            const campaignId = data.get('campaignId');
+            const campaignCode = data.get('campaignCode');
+
+            // Check if user already exists for this campaign
+            const existing = DB.getContributorByPhone(phone, campaignId);
+            if (existing) {
+                // Redirect to confirm payment page
+                this.existingContributor = existing;
+                this.navigate(`/confirm-payment?c=${campaignCode}`);
+                return;
+            }
+
+            const name = data.get('name').trim();
+            if (!name) {
+                Components.toast('Fadlan geli magacaaga', 'error');
+                return;
+            }
+
+            const amount = parseFloat(data.get('amount'));
+            if (!amount || amount <= 0) {
+                Components.toast('Fadlan geli lacag', 'error');
+                return;
+            }
+
+            // Save as new contributor with "pending" status
+            const contributor = {
+                campaignId: campaignId,
+                name: name,
+                phone: phone,
+                amount: amount,
+                status: 'pending' // Ballan qaaday - waiting for payment
+            };
+
+            DB.saveContributor(contributor);
+            Components.toast('Waad ku dartay liiska! ✅', 'success');
+
+            // Automatically send confirmation message to contributor via WhatsApp
+            const campaign = DB.getCampaign(campaignId);
+            const message = WhatsApp.generateConfirmationMessage(contributor, campaign);
+            WhatsApp.openChat(phone, message);
+
+            this.navigate('/join-success');
+        } catch (error) {
+            console.error('Error in submitJoin:', error);
+            Components.toast('Waan ka xunnahay, qalad ayaa dhacay.', 'error');
         }
-
-        const campaignId = data.get('campaignId');
-        const campaignCode = data.get('campaignCode');
-
-        // Check if user already exists for this campaign
-        const existing = DB.getContributorByPhone(phone, campaignId);
-        if (existing) {
-            // Redirect to confirm payment page
-            this.existingContributor = existing;
-            this.navigate(`/confirm-payment?c=${campaignCode}`);
-            return;
-        }
-
-        const name = data.get('name').trim();
-        if (!name) {
-            Components.toast('Fadlan geli magacaaga', 'error');
-            return;
-        }
-
-        const amount = parseFloat(data.get('amount'));
-        if (!amount || amount <= 0) {
-            Components.toast('Fadlan geli lacag', 'error');
-            return;
-        }
-
-        // Save as new contributor with "pending" status
-        const contributor = {
-            campaignId: campaignId,
-            name: name,
-            phone: phone,
-            amount: amount,
-            status: 'pending' // Ballan qaaday - waiting for payment
-        };
-
-        DB.saveContributor(contributor);
-        Components.toast('Waad ku dartay liiska! ✅', 'success');
-
-        // Automatically send confirmation message to contributor via WhatsApp
-        const campaign = DB.getCampaign(campaignId);
-        const message = WhatsApp.generateConfirmationMessage(contributor, campaign);
-        WhatsApp.openChat(phone, message);
-
-        this.navigate('/join-success');
     },
 
     viewJoinSuccess() {
         document.body.classList.add('public-mode');
         const campaign = this.currentJoinCampaign;
+
+        // Trigger celebration!
+        setTimeout(() => this.triggerConfetti(), 300);
         const settings = DB.getSettings();
 
         return `
