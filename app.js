@@ -1239,6 +1239,60 @@ const App = {
                 </div>
             </div>
             
+            ${Auth.isAuthenticated() && DataLayer.hasLocalData() ? `
+                <div class="section-header" style="margin-top: var(--spacing-xl);">
+                    <h3 class="section-title">☁️ Cloud Sync</h3>
+                </div>
+                <div class="card" style="border-left: 4px solid var(--color-primary);">
+                    <div style="margin-bottom: var(--spacing-md);">
+                        <div style="font-weight: var(--font-weight-semibold); margin-bottom: var(--spacing-xs);">
+                            📦 Xogta Maxaliga ah
+                        </div>
+                        <div style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-md);">
+                            Waxaad haysataa xog ku kaydsan computer-kaaga. Gudbiso cloud-ka si aad uga heli kartid devices kale.
+                        </div>
+                    </div>
+
+                    <div style="background: var(--bg-secondary); padding: var(--spacing-md); border-radius: var(--radius-md); margin-bottom: var(--spacing-md);">
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-md); text-align: center;">
+                            <div>
+                                <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-primary);">
+                                    ${DB.getCampaigns().length}
+                                </div>
+                                <div style="font-size: var(--font-size-xs); color: var(--text-tertiary);">Olole</div>
+                            </div>
+                            <div>
+                                <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-primary);">
+                                    ${DB.getContributors().length}
+                                </div>
+                                <div style="font-size: var(--font-size-xs); color: var(--text-tertiary);">Tabaruce</div>
+                            </div>
+                            <div>
+                                <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-primary);">
+                                    ${DB.getPayments().length}
+                                </div>
+                                <div style="font-size: var(--font-size-xs); color: var(--text-tertiary);">Bixin</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: var(--spacing-sm);">
+                        <button class="btn btn-primary" style="flex: 1;" onclick="App.handleMigrateToCloud()" id="migrate-btn">
+                            ${Icons.render('upload', 'icon icon-sm')} Gudbiso Cloud-ka
+                        </button>
+                        <button class="btn btn-outline" style="color: var(--color-error); border-color: var(--color-error);" onclick="App.handleClearLocalData()">
+                            ${Icons.render('trash', 'icon icon-sm')} Tirtir
+                        </button>
+                    </div>
+
+                    <div style="margin-top: var(--spacing-sm); padding: var(--spacing-sm); background: var(--color-primary-subtle); border-radius: var(--radius-sm);">
+                        <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">
+                            💡 <strong>Talo:</strong> Kadib markii aad gudbiso cloud-ka, xogtaada waxaa laga heli karaa devices kale.
+                        </div>
+                    </div>
+                </div>
+            ` : ''}
+            
             <div class="section-header" style="margin-top: var(--spacing-xl);">
                 <h3 class="section-title">Maamulka Xogta</h3>
             </div>
@@ -2857,6 +2911,87 @@ const App = {
             Components.toast('Email la soo diray! Hubi inbox-kaaga.', 'success');
         } else {
             Components.toast(result.error || 'Failed to send email', 'error');
+        }
+    },
+
+    // ========================================
+    // Migration Handlers
+    // ========================================
+
+    async handleMigrateToCloud() {
+        if (!Auth.isAuthenticated()) {
+            Components.toast('Fadlan gal akoonkaaga', 'error');
+            return;
+        }
+
+        if (!confirm('Ma hubtaa inaad gudbinayso xogtaada cloud-ka? Tani waqti yar qaadan kartaa.')) {
+            return;
+        }
+
+        const btn = document.getElementById('migrate-btn');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Gudbinaya...';
+        }
+
+        try {
+            const result = await DataLayer.migrateToSupabase();
+
+            if (result.success) {
+                Components.toast(
+                    `✅ Gudbinta waa guulaysatay!\n${result.campaigns} olole, ${result.contributors} tabaruce, ${result.payments} bixin`,
+                    'success'
+                );
+
+                // Ask if they want to clear local data
+                if (confirm('Xogta waa la gudbiyey cloud-ka. Ma rabtaa inaad tirtirto xogta maxaliga ah?')) {
+                    this.handleClearLocalData();
+                } else {
+                    // Reload to show updated UI
+                    this.handleRoute();
+                }
+            } else {
+                Components.toast('Khalad: ' + result.error, 'error');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = `${Icons.render('upload', 'icon icon-sm')} Gudbiso Cloud-ka`;
+                }
+            }
+        } catch (error) {
+            console.error('Migration error:', error);
+            Components.toast('Khalad ayaa dhacay: ' + error.message, 'error');
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = `${Icons.render('upload', 'icon icon-sm')} Gudbiso Cloud-ka`;
+            }
+        }
+    },
+
+    handleClearLocalData() {
+        if (!confirm('⚠️ MA HUBTAA?\n\nTani waxay tirtiri doontaa DHAMMAAN xogta maxaliga ah. Tani lama celin karo!\n\nFadlan hubi inaad gudbisay cloud-ka ka hor intaadan tirtirin.')) {
+            return;
+        }
+
+        if (!confirm('Xaqiijin kale: Xogta maxaliga ah oo dhan ayaa la tirtiri doonaa. Ma hubtaa?')) {
+            return;
+        }
+
+        try {
+            // Clear all localStorage data
+            localStorage.removeItem('campaigns');
+            localStorage.removeItem('contributors');
+            localStorage.removeItem('payments');
+            localStorage.removeItem('logs');
+
+            Components.toast('Xogta maxaliga ah waa la tirtiray', 'success');
+
+            // Reload page
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } catch (error) {
+            console.error('Clear data error:', error);
+            Components.toast('Khalad ayaa dhacay', 'error');
         }
     }
 };
