@@ -1,0 +1,22 @@
+{
+    "name": "ololeeye",
+    "version": "1.0.0",
+    "description": "WhatsApp-based fundraising app for Somali communities",
+    "scripts": {
+        "dev": "npx serve . -p 3000",
+        "build": "echo 'No build step needed - static files'",
+        "deploy": "vercel --prod"
+    },
+    "keywords": [
+        "fundraising",
+        "whatsapp",
+        "somali",
+        "campaign",
+        "donations"
+    ],
+    "author": "Your Name",
+    "license": "MIT",
+    "devDependencies": {
+        "serve": "^14.2.1"
+    }
+}

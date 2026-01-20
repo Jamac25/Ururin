@@ -1,11 +1,38 @@
-.DS_Store
+# Dependencies
 node_modules/
-*.log
+.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Production
+/build
+/dist
+
+# Misc
+.DS_Store
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# IDE
 .vscode/
 .idea/
-dist/
-build/
+*.swp
+*.swo
+*~
 
-# Supabase credentials (DO NOT COMMIT!)
+# Supabase (IMPORTANT: Keep config file out of git!)
 supabase-config.js
+
+# OS
+Thumbs.db

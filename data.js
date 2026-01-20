@@ -583,6 +583,225 @@ Mahadsanid!`,
         }
 
         return actions;
+    },
+
+    // ========================================
+    // ANALYTICS FUNCTIONS FOR STATS DASHBOARD
+    // ========================================
+
+    // Get campaign performance metrics with enhanced stats
+    getCampaignPerformance() {
+        const campaigns = this.getCampaigns();
+        return campaigns.map(c => {
+            const stats = this.getCampaignStats(c.id);
+            const contributors = this.getContributors(c.id);
+
+            // Calculate days active
+            const created = new Date(c.createdAt);
+            const now = new Date();
+            const daysActive = Math.max(1, Math.ceil((now - created) / (1000 * 60 * 60 * 24)));
+
+            // Calculate collection rate ($ per day)
+            const collectionRate = stats.collected / daysActive;
+
+            // Calculate average per contributor
+            const avgPerContributor = contributors.length > 0 ? stats.collected / contributors.length : 0;
+
+            return {
+                id: c.id,
+                name: c.name,
+                emoji: c.emoji,
+                goal: c.goal,
+                collected: stats.collected,
+                percent: stats.percent,
+                contributors: stats.total,
+                paidCount: stats.paidCount,
+                pendingCount: stats.pendingCount,
+                avgPerContributor: Math.round(avgPerContributor * 100) / 100,
+                daysActive,
+                collectionRate: Math.round(collectionRate * 100) / 100,
+                createdAt: c.createdAt
+            };
+        }).sort((a, b) => b.collected - a.collected); // Sort by amount collected
+    },
+
+    // Get top performing campaigns
+    getTopCampaigns(limit = 3) {
+        const performance = this.getCampaignPerformance();
+        return performance.slice(0, limit);
+    },
+
+    // Get top contributors across all campaigns
+    getTopContributors(limit = 5) {
+        const contributors = this.getContributors();
+        const contributorTotals = {};
+
+        contributors.forEach(c => {
+            if (c.status === 'paid') {
+                if (!contributorTotals[c.name]) {
+                    contributorTotals[c.name] = {
+                        name: c.name,
+                        totalAmount: 0,
+                        campaignCount: 0,
+                        campaigns: []
+                    };
+                }
+                contributorTotals[c.name].totalAmount += parseFloat(c.amount) || 0;
+                contributorTotals[c.name].campaignCount++;
+                contributorTotals[c.name].campaigns.push(c.campaignId);
+            }
+        });
+
+        return Object.values(contributorTotals)
+            .sort((a, b) => b.totalAmount - a.totalAmount)
+            .slice(0, limit);
+    },
+
+    // Get status breakdown (paid, pending, declined)
+    getStatusBreakdown() {
+        const contributors = this.getContributors();
+
+        const breakdown = {
+            paid: { count: 0, amount: 0 },
+            pending: { count: 0, amount: 0 },
+            declined: { count: 0, amount: 0 }
+        };
+
+        contributors.forEach(c => {
+            const status = c.status || 'pending';
+            if (breakdown[status]) {
+                breakdown[status].count++;
+                if (status === 'paid') {
+                    breakdown[status].amount += parseFloat(c.amount) || 0;
+                } else {
+                    breakdown[status].amount += parseFloat(c.amount) || 0;
+                }
+            }
+        });
+
+        return breakdown;
+    },
+
+    // Get collection timeline (last N days)
+    getCollectionTimeline(campaignId = null, days = 30) {
+        const contributors = campaignId ? this.getContributors(campaignId) : this.getContributors();
+        const paidContributors = contributors.filter(c => c.status === 'paid');
+
+        // Create date buckets
+        const timeline = [];
+        const now = new Date();
+
+        for (let i = days - 1; i >= 0; i--) {
+            const date = new Date(now);
+            date.setDate(date.getDate() - i);
+            date.setHours(0, 0, 0, 0);
+
+            const nextDate = new Date(date);
+            nextDate.setDate(nextDate.getDate() + 1);
+
+            const dayTotal = paidContributors
+                .filter(c => {
+                    const updated = new Date(c.updatedAt);
+                    return updated >= date && updated < nextDate;
+                })
+                .reduce((sum, c) => sum + (parseFloat(c.amount) || 0), 0);
+
+            timeline.push({
+                date: date.toISOString().split('T')[0],
+                amount: Math.round(dayTotal * 100) / 100
+            });
+        }
+
+        return timeline;
+    },
+
+    // Get collection rate (average $ per day)
+    getCollectionRate(campaignId = null) {
+        const campaigns = campaignId ? [this.getCampaign(campaignId)] : this.getCampaigns();
+
+        let totalCollected = 0;
+        let oldestDate = new Date();
+
+        campaigns.forEach(c => {
+            if (!c) return;
+            const stats = this.getCampaignStats(c.id);
+            totalCollected += stats.collected;
+
+            const created = new Date(c.createdAt);
+            if (created < oldestDate) {
+                oldestDate = created;
+            }
+        });
+
+        const daysActive = Math.max(1, Math.ceil((new Date() - oldestDate) / (1000 * 60 * 60 * 24)));
+        return Math.round((totalCollected / daysActive) * 100) / 100;
+    },
+
+    // Get success metrics
+    getSuccessMetrics() {
+        const campaigns = this.getCampaigns();
+        const completedCampaigns = campaigns.filter(c => {
+            const stats = this.getCampaignStats(c.id);
+            return stats.percent >= 100;
+        });
+
+        const successRate = campaigns.length > 0
+            ? Math.round((completedCampaigns.length / campaigns.length) * 100)
+            : 0;
+
+        return {
+            totalCampaigns: campaigns.length,
+            completedCampaigns: completedCampaigns.length,
+            activeCampaigns: campaigns.length - completedCampaigns.length,
+            successRate
+        };
+    },
+
+    // Get recent activity (last N events)
+    getRecentActivity(limit = 10) {
+        const activities = [];
+
+        // Get all logs
+        const logs = this.getLogs();
+        logs.forEach(log => {
+            const campaign = this.getCampaign(log.campaignId);
+            activities.push({
+                type: log.action,
+                text: log.details,
+                campaignName: campaign?.name || 'Unknown',
+                timestamp: log.timestamp
+            });
+        });
+
+        // Get recent campaigns
+        const campaigns = this.getCampaigns();
+        campaigns.forEach(c => {
+            activities.push({
+                type: 'campaign_created',
+                text: `Olole cusub la abuuray: ${c.name}`,
+                campaignName: c.name,
+                timestamp: c.createdAt
+            });
+        });
+
+        // Get recent contributors
+        const contributors = this.getContributors();
+        contributors.forEach(c => {
+            const campaign = this.getCampaign(c.campaignId);
+            if (c.status === 'paid') {
+                activities.push({
+                    type: 'payment_received',
+                    text: `${c.name} ayaa bixiyey`,
+                    campaignName: campaign?.name || 'Unknown',
+                    timestamp: c.updatedAt
+                });
+            }
+        });
+
+        // Sort by timestamp and limit
+        return activities
+            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+            .slice(0, limit);
     }
 };
 

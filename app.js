@@ -1190,6 +1190,17 @@ const App = {
         const allContributors = DB.getContributors();
         const settings = DB.getSettings();
 
+        // Get analytics data
+        const performance = DB.getCampaignPerformance();
+        const topCampaigns = DB.getTopCampaigns(3);
+        const topContributors = DB.getTopContributors(5);
+        const statusBreakdown = DB.getStatusBreakdown();
+        const timeline = DB.getCollectionTimeline(null, 14); // Last 14 days
+        const collectionRate = DB.getCollectionRate();
+        const successMetrics = DB.getSuccessMetrics();
+        const recentActivity = DB.getRecentActivity(8);
+
+        // Calculate totals
         let totalCollected = 0;
         let totalGoal = 0;
         let totalPaid = 0;
@@ -1205,9 +1216,12 @@ const App = {
 
         const overallPercent = totalGoal > 0 ? Math.round((totalCollected / totalGoal) * 100) : 0;
 
+        // Render the view first, then initialize charts
+        setTimeout(() => this.initializeStatsCharts(performance, timeline, statusBreakdown), 100);
+
         return `
             <div class="hero-summary">
-                <div class="label">Wadarta La Ururiyey</div>
+                <div class="label">💰 Wadarta La Ururiyey</div>
                 <div class="value">${settings.currencySymbol}${totalCollected.toLocaleString()}</div>
                 <div style="margin-top: var(--spacing-md);">
                     <div style="background: var(--color-primary-subtle); height: 8px; border-radius: var(--radius-lg); overflow: hidden;">
@@ -1215,26 +1229,124 @@ const App = {
                     </div>
                     <div class="subtitle" style="margin-top: var(--spacing-sm);">${overallPercent}% hadafka (${settings.currencySymbol}${totalGoal.toLocaleString()})</div>
                 </div>
+                <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-md); font-size: var(--font-size-sm); color: var(--text-secondary);">
+                    <div>📈 ${settings.currencySymbol}${collectionRate}/päivä</div>
+                    <div>•</div>
+                    <div>✅ ${successMetrics.successRate}% onnistuminen</div>
+                </div>
             </div>
             
             <div class="stats-grid">
-                <div class="stat-item">
+                <div class="stat-item" style="cursor: pointer;" onclick="App.navigate('/campaigns')">
                     <div class="stat-value">${campaigns.length}</div>
-                    <div class="stat-label">Ololaha</div>
+                    <div class="stat-label">Kampanjat</div>
                 </div>
-                <div class="stat-item">
+                <div class="stat-item" style="cursor: pointer;" onclick="App.navigate('/contributors')">
                     <div class="stat-value">${allContributors.length}</div>
-                    <div class="stat-label">Tabarucayaal</div>
+                    <div class="stat-label">Lahjoittajat</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-value" style="color: var(--color-success);">${totalPaid}</div>
-                    <div class="stat-label">Bixiyey</div>
+                    <div class="stat-label">Maksettu</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-value" style="color: var(--color-warning);">${totalPending}</div>
-                    <div class="stat-label">Sugaya</div>
+                    <div class="stat-label">Odottaa</div>
                 </div>
             </div>
+
+            ${performance.length > 0 ? `
+                <div class="section-header" style="margin-top: var(--spacing-xl);">
+                    <h3 class="section-title">📊 Kampanjoiden Suorituskyky</h3>
+                </div>
+                <div class="card" style="cursor: default; padding: var(--spacing-lg);">
+                    <canvas id="campaign-performance-chart" style="max-height: 300px;"></canvas>
+                </div>
+            ` : ''}
+
+            ${topCampaigns.length > 0 || topContributors.length > 0 ? `
+                <div class="section-header" style="margin-top: var(--spacing-xl);">
+                    <h3 class="section-title">🏆 Parhaat Suorittajat</h3>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
+                    ${topCampaigns.length > 0 ? `
+                        <div class="card" style="cursor: default;">
+                            <div style="font-weight: var(--font-weight-semibold); margin-bottom: var(--spacing-md); color: var(--text-secondary); font-size: var(--font-size-sm);">
+                                🥇 Top Kampanjat
+                            </div>
+                            ${topCampaigns.map((c, i) => `
+                                <div style="display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-sm); padding: var(--spacing-sm); background: var(--bg-secondary); border-radius: var(--radius-md); cursor: pointer;" onclick="App.navigate('/campaign/${c.id}')">
+                                    <div style="font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: ${i === 0 ? '#FFD700' : i === 1 ? '#C0C0C0' : '#CD7F32'};">${i + 1}</div>
+                                    <div style="flex: 1;">
+                                        <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold);">${c.name}</div>
+                                        <div style="font-size: var(--font-size-xs); color: var(--text-tertiary);">${c.percent}% • ${settings.currencySymbol}${c.collected.toLocaleString()}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    
+                    ${topContributors.length > 0 ? `
+                        <div class="card" style="cursor: default;">
+                            <div style="font-weight: var(--font-weight-semibold); margin-bottom: var(--spacing-md); color: var(--text-secondary); font-size: var(--font-size-sm);">
+                                💎 Top Lahjoittajat
+                            </div>
+                            ${topContributors.map((c, i) => `
+                                <div style="display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-sm); padding: var(--spacing-sm); background: var(--bg-secondary); border-radius: var(--radius-md);">
+                                    <div style="font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: ${i === 0 ? '#FFD700' : i === 1 ? '#C0C0C0' : '#CD7F32'};">${i + 1}</div>
+                                    <div style="flex: 1;">
+                                        <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold);">${c.name}</div>
+                                        <div style="font-size: var(--font-size-xs); color: var(--text-tertiary);">${settings.currencySymbol}${c.totalAmount.toLocaleString()} • ${c.campaignCount} kampanjaa</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            ` : ''}
+
+            ${timeline.length > 0 ? `
+                <div class="section-header" style="margin-top: var(--spacing-xl);">
+                    <h3 class="section-title">📈 Keräysaikajana (14 päivää)</h3>
+                </div>
+                <div class="card" style="cursor: default; padding: var(--spacing-lg);">
+                    <canvas id="timeline-chart" style="max-height: 250px;"></canvas>
+                </div>
+            ` : ''}
+
+            ${statusBreakdown ? `
+                <div class="section-header" style="margin-top: var(--spacing-xl);">
+                    <h3 class="section-title">📊 Tila-jako</h3>
+                </div>
+                <div class="card" style="cursor: default; padding: var(--spacing-lg);">
+                    <canvas id="status-chart" style="max-height: 250px;"></canvas>
+                </div>
+            ` : ''}
+
+            ${recentActivity.length > 0 ? `
+                <div class="section-header" style="margin-top: var(--spacing-xl);">
+                    <h3 class="section-title">📋 Viimeisimmät Tapahtumat</h3>
+                </div>
+                <div class="card" style="cursor: default;">
+                    ${recentActivity.map(a => {
+            const icon = a.type === 'payment_received' ? '💰' :
+                a.type === 'campaign_created' ? '✨' :
+                    a.type === 'approve_payment' ? '✅' : '📝';
+            const date = new Date(a.timestamp);
+            const timeAgo = this.getTimeAgo(date);
+
+            return `
+                            <div style="display: flex; gap: var(--spacing-md); padding: var(--spacing-md); border-bottom: 1px solid var(--border-color);">
+                                <div style="font-size: var(--font-size-xl);">${icon}</div>
+                                <div style="flex: 1;">
+                                    <div style="font-size: var(--font-size-sm);">${a.text}</div>
+                                    <div style="font-size: var(--font-size-xs); color: var(--text-tertiary); margin-top: 2px;">${a.campaignName} • ${timeAgo}</div>
+                                </div>
+                            </div>
+                        `;
+        }).join('')}
+                </div>
+            ` : ''}
             
             ${Auth.isAuthenticated() && DataLayer.hasLocalData() ? `
                 <div class="section-header" style="margin-top: var(--spacing-xl);">
@@ -1308,6 +1420,161 @@ const App = {
                 </button>
             </div>
         `;
+    },
+
+    // Helper function for time ago
+    getTimeAgo(date) {
+        const now = new Date();
+        const seconds = Math.floor((now - date) / 1000);
+
+        if (seconds < 60) return 'juuri nyt';
+        if (seconds < 3600) return `${Math.floor(seconds / 60)} min sitten`;
+        if (seconds < 86400) return `${Math.floor(seconds / 3600)} h sitten`;
+        if (seconds < 604800) return `${Math.floor(seconds / 86400)} pv sitten`;
+        return date.toLocaleDateString('fi-FI');
+    },
+
+    // Initialize charts for stats dashboard
+    initializeStatsCharts(performance, timeline, statusBreakdown) {
+        if (typeof Chart === 'undefined') {
+            console.error('Chart.js not loaded');
+            return;
+        }
+
+        // Campaign Performance Bar Chart
+        const perfCanvas = document.getElementById('campaign-performance-chart');
+        if (perfCanvas && performance.length > 0) {
+            new Chart(perfCanvas, {
+                type: 'bar',
+                data: {
+                    labels: performance.map(c => c.name),
+                    datasets: [{
+                        label: 'Kerätty %',
+                        data: performance.map(c => c.percent),
+                        backgroundColor: performance.map(c =>
+                            c.percent >= 75 ? '#10b981' :
+                                c.percent >= 25 ? '#f59e0b' : '#ef4444'
+                        ),
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => {
+                                    const campaign = performance[context.dataIndex];
+                                    return `${campaign.percent}% (${DB.getSettings().currencySymbol}${campaign.collected.toLocaleString()})`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: (value) => value + '%'
+                            }
+                        }
+                    },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            this.navigate('/campaign/' + performance[index].id);
+                        }
+                    }
+                }
+            });
+        }
+
+        // Timeline Line Chart
+        const timelineCanvas = document.getElementById('timeline-chart');
+        if (timelineCanvas && timeline.length > 0) {
+            new Chart(timelineCanvas, {
+                type: 'line',
+                data: {
+                    labels: timeline.map(t => {
+                        const date = new Date(t.date);
+                        return date.toLocaleDateString('fi-FI', { month: 'short', day: 'numeric' });
+                    }),
+                    datasets: [{
+                        label: 'Kerätty',
+                        data: timeline.map(t => t.amount),
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `${DB.getSettings().currencySymbol}${context.parsed.y.toLocaleString()}`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: (value) => DB.getSettings().currencySymbol + value
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Status Breakdown Doughnut Chart
+        const statusCanvas = document.getElementById('status-chart');
+        if (statusCanvas && statusBreakdown) {
+            new Chart(statusCanvas, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Maksettu', 'Odottaa', 'Hylätty'],
+                    datasets: [{
+                        data: [
+                            statusBreakdown.paid.count,
+                            statusBreakdown.pending.count,
+                            statusBreakdown.declined.count
+                        ],
+                        backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => {
+                                    const label = context.label;
+                                    const count = context.parsed;
+                                    const amounts = [
+                                        statusBreakdown.paid.amount,
+                                        statusBreakdown.pending.amount,
+                                        statusBreakdown.declined.amount
+                                    ];
+                                    return `${label}: ${count} kpl (${DB.getSettings().currencySymbol}${amounts[context.dataIndex].toLocaleString()})`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
     },
 
     viewSettings() {
@@ -1435,16 +1702,37 @@ const App = {
             description: data.get('description').trim(),
             goal: parseFloat(data.get('goal')) || 0,
             deadline: data.get('deadline'),
-            zaadNumber: data.get('zaadNumber').trim()
+            zaadNumber: data.get('zaadNumber').trim(),
+            coordinatorPin: data.get('coordinatorPin').trim()
         };
 
+        // Validate name
         if (!campaign.name) {
             Components.toast('Fadlan geli magaca ololaha', 'error');
             return;
         }
 
+        // Validate goal
         if (campaign.goal <= 0) {
             Components.toast('Fadlan geli hadaf sax ah', 'error');
+            return;
+        }
+
+        // Validate PIN (must be exactly 4 digits)
+        if (!campaign.coordinatorPin || campaign.coordinatorPin.length !== 4 || !/^\d{4}$/.test(campaign.coordinatorPin)) {
+            Components.toast('PIN-ku waa inuu ahaadaa 4 lambar', 'error');
+            return;
+        }
+
+        // Validate Zaad number
+        if (!campaign.zaadNumber || campaign.zaadNumber.length < 9) {
+            Components.toast('Fadlan geli lambar lacagta sax ah (ugu yaraan 9 lambar)', 'error');
+            return;
+        }
+
+        // Validate deadline (must be in future if provided)
+        if (campaign.deadline && new Date(campaign.deadline) < new Date()) {
+            Components.toast('Wakhtiga waa inuu ka dambeeyo maanta', 'error');
             return;
         }
 
@@ -1494,8 +1782,22 @@ const App = {
             status: data.get('status') || 'pending'
         };
 
+        // Validate name
         if (!contributor.name) {
             Components.toast('Fadlan geli magaca', 'error');
+            return;
+        }
+
+        // Validate amount (must be greater than 0)
+        if (!contributor.amount || contributor.amount <= 0) {
+            Components.toast('Fadlan geli lacag sax ah (ka weyn 0)', 'error');
+            return;
+        }
+
+        // Check for duplicate phone number in same campaign
+        const existing = DB.getContributorByPhone(phone, contributor.campaignId);
+        if (existing && (!contributor.id || existing.id !== contributor.id)) {
+            Components.toast('Lambarkaan horay ayaa loo isticmaalay ololahan', 'error');
             return;
         }
 
@@ -1654,11 +1956,26 @@ const App = {
         event.preventDefault();
         const data = new FormData(event.target);
 
+        const name = data.get('name').trim();
+        const text = data.get('text').trim();
+
+        // Validate name
+        if (!name) {
+            Components.toast('Fadlan geli magaca template-ka', 'error');
+            return;
+        }
+
+        // Validate text content
+        if (!text) {
+            Components.toast('Fadlan geli qoraalka template-ka', 'error');
+            return;
+        }
+
         const existingTemplate = DB.getTemplate(data.get('type'));
         const template = {
             ...existingTemplate,
-            name: data.get('name'),
-            text: data.get('text')
+            name: name,
+            text: text
         };
 
         DB.saveTemplate(template);
@@ -1671,8 +1988,23 @@ const App = {
         event.preventDefault();
         const data = new FormData(event.target);
 
-        DB.saveSetting('currencySymbol', data.get('currencySymbol'));
-        DB.saveSetting('defaultZaad', data.get('defaultZaad'));
+        const currencySymbol = data.get('currencySymbol').trim();
+        const defaultZaad = data.get('defaultZaad').trim();
+
+        // Validate currency symbol
+        if (!currencySymbol) {
+            Components.toast('Fadlan geli calaamadda lacagta', 'error');
+            return;
+        }
+
+        // Validate default Zaad number
+        if (!defaultZaad || defaultZaad.length < 9) {
+            Components.toast('Fadlan geli lambar sax ah (ugu yaraan 9 lambar)', 'error');
+            return;
+        }
+
+        DB.saveSetting('currencySymbol', currencySymbol);
+        DB.saveSetting('defaultZaad', defaultZaad);
 
         Components.toast('Dejinta waa la keydiyey! ✓', 'success');
     },
