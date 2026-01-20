@@ -269,6 +269,192 @@ body {
     gap: var(--spacing-xs);
 }
 
+/* ========================================
+   Search Bar Styles
+   ======================================== */
+.header-center {
+    flex: 1;
+    max-width: 500px;
+    margin: 0 var(--spacing-md);
+    position: relative;
+}
+
+.search-container {
+    position: relative;
+    width: 100%;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 40px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    transition: all 0.2s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background: var(--bg-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-subtle);
+}
+
+.search-input::placeholder {
+    color: var(--text-tertiary);
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-tertiary);
+    pointer-events: none;
+}
+
+.search-clear {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.search-clear:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.search-results {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.search-results.hidden {
+    display: none;
+}
+
+.search-results-empty {
+    padding: var(--spacing-xl);
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: var(--font-size-sm);
+}
+
+.search-results-group {
+    padding: var(--spacing-sm) 0;
+}
+
+.search-results-group:not(:last-child) {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.search-results-group-title {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.search-result-item {
+    padding: var(--spacing-md);
+    cursor: pointer;
+    transition: background 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.search-result-item:hover {
+    background: var(--bg-secondary);
+}
+
+.search-result-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    background: var(--color-primary-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-xl);
+    flex-shrink: 0;
+}
+
+.search-result-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.search-result-title {
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    margin-bottom: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.search-result-subtitle {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.search-result-badge {
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    flex-shrink: 0;
+}
+
+.search-result-badge.paid {
+    background: var(--color-success-bg);
+    color: var(--color-success);
+}
+
+.search-result-badge.pending {
+    background: var(--color-warning-bg);
+    color: var(--color-warning);
+}
+
+.search-result-badge.declined {
+    background: var(--color-error-bg);
+    color: var(--color-error);
+}
+
+@media (max-width: 768px) {
+    .header-center {
+        display: none;
+    }
+}
+
 .logo {
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-bold);
@@ -2794,6 +2980,7 @@ textarea:focus-visible {
     border-color: var(--color-danger) !important;
     box-shadow: 0 0 0 1px var(--color-danger) !important;
 }
+
 /* Confetti Particles */
 .confetti {
     position: fixed;
@@ -2806,6 +2993,13 @@ textarea:focus-visible {
 }
 
 @keyframes confetti-fall {
-    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
 }
