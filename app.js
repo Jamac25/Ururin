@@ -639,10 +639,19 @@ const App = {
         const settings = DB.getSettings();
 
         return `
-            <div class="hero-summary">
-                <div class="label">Wadarta la ururiyey</div>
-                <div class="value">${settings.currencySymbol}${totalCollected.toLocaleString()}</div>
-                <div class="subtitle">ka mid ah ${settings.currencySymbol}${totalGoal.toLocaleString()} hadafka</div>
+            <div style="background: var(--gradient-hero-mesh); border-radius: 24px; padding: 48px 24px; margin-bottom: 32px; position: relative; overflow: hidden; box-shadow: var(--shadow-hero), var(--glow-hero);">
+                <div style="position: relative; z-index: 1; text-align: center;">
+                    <div style="font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.95); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px;">
+                        Wadarta la ururiyey
+                    </div>
+                    <div style="font-size: 72px; font-weight: 800; color: white; letter-spacing: -0.03em; line-height: 1; margin-bottom: 12px; text-shadow: 0 4px 20px rgba(0,0,0,0.3), 0 0 40px rgba(16,185,129,0.3);">
+                        ${settings.currencySymbol}${totalCollected.toLocaleString()}
+                    </div>
+                    <div style="font-size: 16px; color: rgba(255,255,255,0.9); font-weight: 500;">
+                        ka mid ah ${settings.currencySymbol}${totalGoal.toLocaleString()} hadafka
+                    </div>
+                </div>
+                <div class="glass" style="position: absolute; bottom: 0; left: 0; right: 0; height: 60%; border-radius: 0 0 24px 24px; border: none;"></div>
             </div>
             
             <div class="stats-grid mb-xl">
