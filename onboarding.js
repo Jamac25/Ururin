@@ -40,9 +40,7 @@ const Onboarding = {
     },
 
     showWelcomeModal() {
-        const modal = Components.modal({
-            title: '👋 Ku Soo Dhawoow Ololeeye!',
-            content: `
+        const content = `
                 <div style="text-align: center; padding: var(--spacing-xl);">
                     <div style="font-size: 4rem; margin-bottom: var(--spacing-lg);">💰</div>
                     <h2 style="margin-bottom: var(--spacing-md); color: var(--text-primary);">
@@ -80,9 +78,9 @@ const Onboarding = {
                         </button>
                     </div>
                 </div>
-            `,
-            showFooter: false
-        });
+            `;
+
+        Components.showModal('👋 Ku Soo Dhawoow Ololeeye!', content);
     },
 
     startTour() {
