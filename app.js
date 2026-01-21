@@ -10,6 +10,7 @@
 const Notifications = {
     permission: 'default',
     enabled: false,
+    lastCheck: null,
 
     async init() {
         // Check if notifications are supported
@@ -28,6 +29,11 @@ const Notifications = {
             this.enabled = false;
         }
 
+        // Start daily check if enabled
+        if (this.enabled) {
+            this.startDailyCheck();
+        }
+
         return this.enabled;
     },
 
@@ -40,26 +46,39 @@ const Notifications = {
         if (Notification.permission === 'granted') {
             this.enabled = true;
             DB.saveSetting('notificationsEnabled', true);
-            Components.toast('Notifications waa la furtay!', 'success');
+            this.startDailyCheck();
+            Components.toast('✅ Notifications waa la furtay!', 'success');
             return true;
         }
 
         if (Notification.permission === 'denied') {
-            Components.toast('Notifications waa la diiday. Fur browser settings', 'error');
+            Components.toast('❌ Notifications waa la diiday. Fur browser settings', 'error');
             return false;
         }
 
         // Request permission
-        const permission = await Notification.requestPermission();
-        this.permission = permission;
+        try {
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                this.enabled = true;
+                this.permission = 'granted';
+                DB.saveSetting('notificationsEnabled', true);
+                this.startDailyCheck();
+                Components.toast('✅ Notifications waa la furtay!', 'success');
 
-        if (permission === 'granted') {
-            this.enabled = true;
-            DB.saveSetting('notificationsEnabled', true);
-            Components.toast('Notifications waa la furtay!', 'success');
-            return true;
-        } else {
-            Components.toast('Notifications permission waa la diiday', 'error');
+                // Show test notification
+                this.show('Ololeeye', {
+                    body: 'Notifications waa shaqeynayaan! 🎉',
+                    icon: '/logo.png'
+                });
+
+                return true;
+            } else {
+                Components.toast('Notifications waa la diiday', 'error');
+                return false;
+            }
+        } catch (error) {
+            console.error('Notification permission error:', error);
             return false;
         }
     },
@@ -69,28 +88,26 @@ const Notifications = {
             return null;
         }
 
-        const defaultOptions = {
-            icon: 'logo.png',
-            badge: 'logo.png',
-            vibrate: [200, 100, 200],
-            requireInteraction: false,
+        const notification = new Notification(title, {
+            icon: '/logo.png',
+            badge: '/logo.png',
             ...options
+        });
+
+        // Click handler
+        notification.onclick = () => {
+            window.focus();
+            if (options.url) {
+                window.location.hash = options.url;
+            }
+            notification.close();
         };
 
-        try {
-            const notification = new Notification(title, defaultOptions);
-
-            // Auto-close after 5 seconds if not interactive
-            if (!defaultOptions.requireInteraction) {
-                setTimeout(() => notification.close(), 5000);
-            }
-
-            return notification;
-        } catch (e) {
-            console.error('Notification error:', e);
-            return null;
-        }
-    },
+    } catch(e) {
+        console.error('Notification error:', e);
+        return null;
+    }
+},
 
     // Notification for new pending payment
     notifyNewPayment(contributorName, amount, campaignName) {
@@ -103,30 +120,30 @@ const Notifications = {
         });
     },
 
-    // Notification for campaign goal reached
-    notifyGoalReached(campaignName, collected) {
-        const settings = DB.getSettings();
-        return this.show('🎉 Hadafka la gaaray!', {
-            body: `${campaignName}\n\nWaxaa la ururiyey: ${settings.currencySymbol}${collected}`,
-            tag: 'goal-reached',
-            requireInteraction: true,
-            data: { type: 'goal' }
-        });
-    },
+        // Notification for campaign goal reached
+        notifyGoalReached(campaignName, collected) {
+    const settings = DB.getSettings();
+    return this.show('🎉 Hadafka la gaaray!', {
+        body: `${campaignName}\n\nWaxaa la ururiyey: ${settings.currencySymbol}${collected}`,
+        tag: 'goal-reached',
+        requireInteraction: true,
+        data: { type: 'goal' }
+    });
+},
 
-    // Test notification
-    test() {
-        return this.show('✅ Notifications waa shaqeynayaan!', {
-            body: 'Waxaad heli doontaa notifications marka lacag cusub la soo sheego.',
-            tag: 'test'
-        });
-    },
+// Test notification
+test() {
+    return this.show('✅ Notifications waa shaqeynayaan!', {
+        body: 'Waxaad heli doontaa notifications marka lacag cusub la soo sheego.',
+        tag: 'test'
+    });
+},
 
-    disable() {
-        this.enabled = false;
-        DB.saveSetting('notificationsEnabled', false);
-        Components.toast('Notifications waa la xiray', 'success');
-    }
+disable() {
+    this.enabled = false;
+    DB.saveSetting('notificationsEnabled', false);
+    Components.toast('Notifications waa la xiray', 'success');
+}
 };
 
 const App = {

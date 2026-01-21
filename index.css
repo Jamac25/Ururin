@@ -566,6 +566,120 @@ body {
     }
 }
 
+/* ========================================
+   Onboarding Styles
+   ======================================== */
+.onboarding-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+}
+
+.onboarding-spotlight {
+    position: fixed;
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(5, 150, 105, 0.5);
+    z-index: 10001;
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.onboarding-tooltip {
+    position: fixed;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    max-width: 400px;
+    box-shadow: var(--shadow-2xl);
+    z-index: 10002;
+    animation: slideUp 0.3s ease;
+}
+
+.onboarding-tooltip-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.onboarding-step-counter {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.onboarding-close {
+    background: none;
+    border: none;
+    color: var(--text-tertiary);
+    font-size: var(--font-size-xl);
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+}
+
+.onboarding-close:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.onboarding-tooltip-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.onboarding-tooltip-message {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: var(--spacing-lg);
+}
+
+.onboarding-tooltip-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .logo {
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-bold);
