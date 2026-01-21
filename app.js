@@ -94,20 +94,135 @@ const Notifications = {
             ...options
         });
 
-        // Click handler
-        notification.onclick = () => {
-            window.focus();
-            if (options.url) {
-                window.location.hash = options.url;
-            }
-            notification.close();
-        };
+        try {
+            const notification = new Notification(title, {
+                icon: '/logo.png',
+                badge: '/logo.png',
+                ...options
+            });
 
-    } catch(e) {
-        console.error('Notification error:', e);
-        return null;
-    }
-},
+            // Click handler
+            notification.onclick = () => {
+                window.focus();
+                if (options.url) {
+                    window.location.hash = options.url;
+                }
+                notification.close();
+            };
+            return notification;
+        } catch (e) {
+            console.error('Notification error:', e);
+            return null;
+        }
+    },
+
+    startDailyCheck() {
+        // Check every hour
+        setInterval(() => {
+            this.checkPendingPayments();
+            this.checkMilestones();
+        }, 60 * 60 * 1000); // Every hour
+
+        // Also check now
+        setTimeout(() => {
+            this.checkPendingPayments();
+            this.checkMilestones();
+        }, 5000);
+    },
+
+    checkPendingPayments() {
+        if (!this.enabled) return;
+
+        const now = new Date();
+        const hour = now.getHours();
+
+        // Only send at 10 AM
+        if (hour !== 10) return;
+
+        // Check if already sent today
+        const lastCheck = localStorage.getItem('last_reminder_check');
+        const today = now.toDateString();
+
+        if (lastCheck === today) return;
+
+        // Count pending payments
+        const campaigns = DB.getCampaigns();
+        let totalPending = 0;
+        let totalPendingAmount = 0;
+        const settings = DB.getSettings();
+
+        campaigns.forEach(c => {
+            const stats = DB.getCampaignStats(c.id);
+            totalPending += stats.pendingCount;
+
+            const contributors = DB.getContributors(c.id);
+            contributors.forEach(contrib => {
+                if (contrib.status === 'pending') {
+                    totalPendingAmount += parseFloat(contrib.amount) || 0;
+                }
+            });
+        });
+
+        if (totalPending > 0) {
+            this.show('Ololeeye - Xasuusin', {
+                body: `${totalPending} qof oo sugaya (${settings.currencySymbol}${totalPendingAmount.toLocaleString()})`,
+                tag: 'daily-reminder',
+                url: '#/stats',
+                requireInteraction: true
+            });
+
+            localStorage.setItem('last_reminder_check', today);
+
+            if (typeof Analytics !== 'undefined') {
+                Analytics.trackEvent('Notification', 'daily_reminder', 'sent', totalPending);
+            }
+        }
+    },
+
+    checkMilestones() {
+        if (!this.enabled) return;
+
+        const campaigns = DB.getCampaigns();
+        const notifiedMilestones = JSON.parse(localStorage.getItem('notified_milestones') || '{}');
+
+        campaigns.forEach(campaign => {
+            const stats = DB.getCampaignStats(campaign.id);
+            const percent = stats.percent;
+
+            // 50% milestone
+            if (percent >= 50 && percent < 100 && !notifiedMilestones[`${campaign.id}_50`]) {
+                this.show(`${campaign.emoji || '💰'} ${campaign.name}`, {
+                    body: `Hambalyo! 50% ayaa la gaadhay! (${stats.percent}%)`,
+                    tag: `milestone-50-${campaign.id}`,
+                    url: `#/campaign/${campaign.id}`
+                });
+
+                notifiedMilestones[`${campaign.id}_50`] = true;
+                localStorage.setItem('notified_milestones', JSON.stringify(notifiedMilestones));
+
+                if (typeof Analytics !== 'undefined') {
+                    Analytics.trackEvent('Notification', 'milestone_50', campaign.id);
+                }
+            }
+
+            // 100% milestone
+            if (percent >= 100 && !notifiedMilestones[`${campaign.id}_100`]) {
+                this.show(`${campaign.emoji || '🎉'} ${campaign.name}`, {
+                    body: `Hambalyo! Ujeedada waa la gaadhay! 🎉 (${stats.percent}%)`,
+                    tag: `milestone-100-${campaign.id}`,
+                    url: `#/campaign/${campaign.id}`,
+                    requireInteraction: true
+                });
+
+                notifiedMilestones[`${campaign.id}_100`] = true;
+                localStorage.setItem('notified_milestones', JSON.stringify(notifiedMilestones));
+
+                if (typeof Analytics !== 'undefined') {
+                    Analytics.trackEvent('Notification', 'milestone_100', campaign.id);
+                }
+            }
+        });
+    },
 
     // Notification for new pending payment
     notifyNewPayment(contributorName, amount, campaignName) {
@@ -120,30 +235,30 @@ const Notifications = {
         });
     },
 
-        // Notification for campaign goal reached
-        notifyGoalReached(campaignName, collected) {
-    const settings = DB.getSettings();
-    return this.show('🎉 Hadafka la gaaray!', {
-        body: `${campaignName}\n\nWaxaa la ururiyey: ${settings.currencySymbol}${collected}`,
-        tag: 'goal-reached',
-        requireInteraction: true,
-        data: { type: 'goal' }
-    });
-},
+    // Notification for campaign goal reached
+    notifyGoalReached(campaignName, collected) {
+        const settings = DB.getSettings();
+        return this.show('🎉 Hadafka la gaaray!', {
+            body: `${campaignName}\n\nWaxaa la ururiyey: ${settings.currencySymbol}${collected}`,
+            tag: 'goal-reached',
+            requireInteraction: true,
+            data: { type: 'goal' }
+        });
+    },
 
-// Test notification
-test() {
-    return this.show('✅ Notifications waa shaqeynayaan!', {
-        body: 'Waxaad heli doontaa notifications marka lacag cusub la soo sheego.',
-        tag: 'test'
-    });
-},
+    // Test notification
+    test() {
+        return this.show('✅ Notifications waa shaqeynayaan!', {
+            body: 'Waxaad heli doontaa notifications marka lacag cusub la soo sheego.',
+            tag: 'test'
+        });
+    },
 
-disable() {
-    this.enabled = false;
-    DB.saveSetting('notificationsEnabled', false);
-    Components.toast('Notifications waa la xiray', 'success');
-}
+    disable() {
+        this.enabled = false;
+        DB.saveSetting('notificationsEnabled', false);
+        Components.toast('Notifications waa la xiray', 'success');
+    }
 };
 
 const App = {
