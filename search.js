@@ -30,6 +30,7 @@ const GlobalSearch = {
             if (e.key === '/' && !this.isInputFocused()) {
                 e.preventDefault();
                 this.searchInput.focus();
+                this.searchInput.select(); // Select all text to prevent concatenation
             }
             if (e.key === 'Escape' && document.activeElement === this.searchInput) {
                 this.clear();
@@ -39,10 +40,20 @@ const GlobalSearch = {
 
         // Click outside to close
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.header-center')) {
+            if (!e.target.closest('.header-center') && !e.target.closest('.mobile-search-toggle')) {
                 this.hideResults();
+                this.hideMobileSearch();
             }
         });
+
+        // Mobile search toggle
+        const mobileToggle = document.getElementById('mobile-search-toggle');
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleMobileSearch();
+            });
+        }
     },
 
     isInputFocused() {
@@ -250,6 +261,38 @@ const GlobalSearch = {
             this.searchClear.classList.add('hidden');
         }
         this.hideResults();
+    },
+
+    toggleMobileSearch() {
+        const headerCenter = document.querySelector('.header-center');
+        const mobileToggle = document.getElementById('mobile-search-toggle');
+
+        if (headerCenter.classList.contains('active')) {
+            this.hideMobileSearch();
+        } else {
+            this.showMobileSearch();
+        }
+    },
+
+    showMobileSearch() {
+        const headerCenter = document.querySelector('.header-center');
+        const mobileToggle = document.getElementById('mobile-search-toggle');
+
+        headerCenter.classList.add('active');
+        if (mobileToggle) {
+            mobileToggle.classList.add('active');
+        }
+        this.searchInput.focus();
+    },
+
+    hideMobileSearch() {
+        const headerCenter = document.querySelector('.header-center');
+        const mobileToggle = document.getElementById('mobile-search-toggle');
+
+        headerCenter.classList.remove('active');
+        if (mobileToggle) {
+            mobileToggle.classList.remove('active');
+        }
     }
 };
 
