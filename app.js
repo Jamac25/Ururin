@@ -1784,11 +1784,56 @@ const App = {
                 `}
             </div>
             
+            <!-- Templates Section -->
+            <div class="mt-2xl">
+                ${typeof TemplateManager !== 'undefined' ? TemplateManager.renderTemplatesSection() : ''}
+            </div>
+            
+            <!-- Export Section -->
+            <div class="section-header mt-2xl">
+                <h3 class="section-title">📊 Export Data</h3>
+            </div>
+            
+            <div class="card" style="cursor: default;">
+                <div class="mb-md">
+                    <div style="font-weight: var(--font-weight-semibold);" class="mb-xs">Soo dejiso xogta</div>
+                    <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">
+                        Soo dejiso ololalaha oo dhan CSV ama Excel ahaan
+                    </div>
+                </div>
+                
+                <div class="export-btn-group">
+                    <button class="export-btn" onclick="ExcelExport.exportAllCampaignsCSV()">
+                        📄 CSV
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Cloud Sync Section -->
+            <div class="section-header mt-2xl">
+                <h3 class="section-title">☁️ Cloud Sync</h3>
+            </div>
+            
+            <div class="card" style="cursor: default;">
+                <div class="mb-md">
+                    <div style="font-weight: var(--font-weight-semibold);" class="mb-xs">Supabase Sync</div>
+                    <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">
+                        Ku keydi xogtaada daruuraha (cloud)
+                    </div>
+                </div>
+                
+                <div class="p-md" style="background: var(--bg-tertiary); border-radius: var(--radius-lg); font-size: var(--font-size-sm); color: var(--text-secondary);">
+                    ${typeof Auth !== 'undefined' && Auth.isAuthenticated() ?
+                '✅ Waxaad ku xiran tahay: ' + Auth.getUser()?.email :
+                '⚠️ Fadlan soo gal si aad u isticmaasho cloud sync'}
+                </div>
+            </div>
+            
             <div class="mt-2xl pt-xl" style="border-top: 1px solid var(--border-color);">
                 <div class="text-center" style="color: var(--text-tertiary); font-size: var(--font-size-sm);">
                     <div class="emoji-lg mb-sm">🌙</div>
                     <div style="font-weight: var(--font-weight-semibold); color: var(--text-secondary);">OLOLEEYE</div>
-                    <div>Version 1.0</div>
+                    <div>Version 2.0</div>
                     <div class="mt-xs">Ololeeynta Lacagaha ee WhatsApp</div>
                 </div>
             </div>
