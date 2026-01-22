@@ -322,8 +322,14 @@ const App = {
             settingsBtn.addEventListener('click', () => this.navigate('/settings'));
         }
 
-        // Initial route - ALWAYS render current route
-        if (!window.location.hash) {
+        // Initial route - Always start from home page when app is first loaded
+        // This ensures shared links always open to the main page
+        const currentHash = window.location.hash;
+        const protectedRoutes = ['/campaign/', '/edit/', '/add-contributor/', '/contributor/', '/edit-contributor/'];
+        const isProtectedRoute = protectedRoutes.some(route => currentHash.includes(route));
+
+        // If no hash or on a protected route, go to home
+        if (!currentHash || currentHash === '#' || isProtectedRoute) {
             window.location.hash = '#/';
         }
         this.handleRoute(); // Always call this to render the page
