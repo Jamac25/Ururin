@@ -977,11 +977,11 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2px;
+    gap: 4px;
     padding: var(--spacing-sm) var(--spacing-md);
     color: var(--text-tertiary);
     text-decoration: none;
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
     transition: all var(--transition-fast);
     border-radius: var(--radius-lg);
@@ -1202,21 +1202,20 @@ body {
 }
 
 .stat-value {
-    font-size: var(--font-size-5xl);
-    /* Hero size */
-    font-weight: var(--font-weight-extrabold);
+    font-size: var(--font-size-3xl);
+    /* 32px - More proportional for stat cards */
+    font-weight: var(--font-weight-bold);
     color: var(--text-primary);
-    letter-spacing: var(--letter-spacing-tighter);
-    line-height: 1;
+    letter-spacing: var(--letter-spacing-tight);
+    line-height: 1.1;
     font-variant-numeric: tabular-nums;
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: var(--spacing-xs);
 }
 
 .stat-label {
     font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-medium);
     color: var(--text-secondary);
-    margin-top: var(--spacing-xs);
     letter-spacing: var(--letter-spacing-normal);
 }
 
