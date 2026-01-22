@@ -31,8 +31,8 @@ lerna-debug.log*
 *.swo
 *~
 
-# Supabase (IMPORTANT: Keep config file out of git!)
-supabase-config.js
+# Supabase (service role key only - anon key is safe to expose)
+# supabase-config.js is now committed
 
 # OS
 Thumbs.db
