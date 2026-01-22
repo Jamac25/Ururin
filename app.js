@@ -718,10 +718,10 @@ const App = {
                 <div class="flex items-center gap-md">
                     <div class="emoji-lg">✨</div>
                     <div class="flex-1">
-                        <div class="card-title">Automaatio-ehdotukset</div>
+                        <div class="card-title">Talooyin Otomaatig ah</div>
                         <div class="card-subtitle">
-                            ${reminderCount > 0 ? `📩 ${reminderCount} muistutusta ` : ''}
-                            ${updateCount > 0 ? `📢 ${updateCount} päivitystä` : ''}
+                            ${reminderCount > 0 ? `📩 ${reminderCount} xasuusin ` : ''}
+                            ${updateCount > 0 ? `📢 ${updateCount} cusbooneysiin` : ''}
                         </div>
                     </div>
                     <div style="background: var(--color-primary); color: white; padding: 4px 12px; border-radius: var(--radius-full); font-weight: bold;">${totalActions}</div>
@@ -853,10 +853,10 @@ const App = {
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-sm); margin-bottom: var(--spacing-md);">
                 <button class="btn btn-secondary" onclick="App.copyJoinLink('${id}')">
-                    ${Icons.render('link', 'icon icon-sm')} Kopioi Join-linkki
+                    ${Icons.render('link', 'icon icon-sm')} Koobiya Join-ka
                 </button>
                 <button class="btn btn-secondary" onclick="App.copyGroupUpdate('${id}')">
-                    ${Icons.render('send', 'icon icon-sm')} Kopioi Päivitys
+                    ${Icons.render('send', 'icon icon-sm')} Koobiya Wargeyska
                 </button>
                 <button class="btn btn-secondary" onclick="CSVExport.exportCampaignContributors('${id}'); Components.toast('CSV la soo dejiyey!', 'success');">
                     ${Icons.render('download', 'icon icon-sm')} Export Tabarucayaal
@@ -1299,7 +1299,7 @@ const App = {
                     ✏️ Muokkaa pohjia
                 </button>
                 <button class="btn btn-secondary flex-1" onclick="App.copyGroupUpdate('${campaignId}')">
-                    📢 Kopioi ryhmäviesti
+                    📢 Koobiya fariinta kooxda
                 </button>
             </div>
         `;
@@ -1377,9 +1377,9 @@ const App = {
                     <div class="subtitle" style="margin-top: var(--spacing-sm);">${overallPercent}% hadafka (${settings.currencySymbol}${totalGoal.toLocaleString()})</div>
                 </div>
                 <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-md); font-size: var(--font-size-sm); color: var(--text-secondary);">
-                    <div>📈 ${settings.currencySymbol}${collectionRate}/päivä</div>
+                    <div>📈 ${settings.currencySymbol}${collectionRate}/maalin</div>
                     <div>•</div>
-                    <div>✅ ${successMetrics.successRate}% onnistuminen</div>
+                    <div>✅ ${successMetrics.successRate}% guulaystay</div>
                 </div>
             </div>
             
@@ -1443,7 +1443,7 @@ const App = {
                                     <div style="font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: ${i === 0 ? '#FFD700' : i === 1 ? '#C0C0C0' : '#CD7F32'};">${i + 1}</div>
                                     <div style="flex: 1;">
                                         <div style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold);">${c.name}</div>
-                                        <div style="font-size: var(--font-size-xs); color: var(--text-tertiary);">${settings.currencySymbol}${c.totalAmount.toLocaleString()} • ${c.campaignCount} kampanjaa</div>
+                                        <div style="font-size: var(--font-size-xs); color: var(--text-tertiary);">${settings.currencySymbol}${c.totalAmount.toLocaleString()} • ${c.campaignCount} olole</div>
                                     </div>
                                 </div>
                             `).join('')}
@@ -1454,7 +1454,7 @@ const App = {
 
             ${timeline.length > 0 ? `
                 <div class="section-header" style="margin-top: var(--spacing-xl);">
-                    <h3 class="section-title">📈 Keräysaikajana (14 päivää)</h3>
+                    <h3 class="section-title">📈 Jadwalka Ururinta (14 maalmood)</h3>
                 </div>
                 <div class="card" style="cursor: default; padding: var(--spacing-lg);">
                     <canvas id="timeline-chart" style="max-height: 250px;"></canvas>
@@ -1472,7 +1472,7 @@ const App = {
 
             ${recentActivity.length > 0 ? `
                 <div class="section-header" style="margin-top: var(--spacing-xl);">
-                    <h3 class="section-title">📋 Viimeisimmät Tapahtumat</h3>
+                    <h3 class="section-title">📋 Dhacdooyinka Ugu Dambeeyey</h3>
                 </div>
                 <div class="card" style="cursor: default;">
                     ${recentActivity.map(a => {
@@ -1497,7 +1497,7 @@ const App = {
             
             ${Auth.isAuthenticated() && DataLayer.hasLocalData() ? `
                 <div class="section-header" style="margin-top: var(--spacing-xl);">
-                    <h3 class="section-title">☁️ Cloud Sync</h3>
+                    <h3 class="section-title">☁️ Isku-Dubaridka Daruuraha</h3>
                 </div>
                 <div class="card" style="border-left: 4px solid var(--color-primary);">
                     <div style="margin-bottom: var(--spacing-md);">
@@ -1686,7 +1686,7 @@ const App = {
             new Chart(statusCanvas, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Maksettu', 'Odottaa', 'Hylätty'],
+                    labels: ['Bixiyey', 'Sugaya', 'Diiday'],
                     datasets: [{
                         data: [
                             statusBreakdown.paid.count,
@@ -1714,7 +1714,7 @@ const App = {
                                         statusBreakdown.pending.amount,
                                         statusBreakdown.declined.amount
                                     ];
-                                    return `${label}: ${count} kpl (${DB.getSettings().currencySymbol}${amounts[context.dataIndex].toLocaleString()})`;
+                                    return `${label}: ${count} dad (${DB.getSettings().currencySymbol}${amounts[context.dataIndex].toLocaleString()})`;
                                 }
                             }
                         }
@@ -1760,7 +1760,7 @@ const App = {
             
             <div class="card" style="cursor: default;">
                 <div class="mb-md">
-                    <div style="font-weight: var(--font-weight-semibold);" class="mb-xs">Browser Notifications</div>
+                    <div style="font-weight: var(--font-weight-semibold);" class="mb-xs">Ogeysiisyada Browser-ka</div>
                     <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">
                         Hel ogeysiis marka lacag cusub la soo sheego
                     </div>
@@ -1817,7 +1817,7 @@ const App = {
             
             <!-- Cloud Sync Section -->
             <div class="section-header mt-2xl">
-                <h3 class="section-title">☁️ Cloud Sync</h3>
+                <h3 class="section-title">☁️ Isku-Dubaridka Daruuraha</h3>
             </div>
             
             <div class="card" style="cursor: default;">
@@ -2276,7 +2276,7 @@ const App = {
         })}
                 
                 ${Components.formGroup({
-            label: 'Lambarka Keräyksesta',
+            label: 'Lambarka Ururinta',
             name: 'campaignCode',
             placeholder: 'Tusaale: 4729',
             required: true,
@@ -2558,7 +2558,7 @@ const App = {
         const campaign = DB.getCampaignByCode(campaignCode);
 
         if (!campaign) {
-            Components.toast('Lambarka keräyksesta lama helin', 'error');
+            Components.toast('Lambarka ururinta lama helin', 'error');
             return;
         }
 
@@ -3032,12 +3032,12 @@ const App = {
             `}
 
             <div class="section-header" style="margin-top: var(--spacing-xl);">
-                <h3 class="section-title">📢 Ryhmäviesti</h3>
+                <h3 class="section-title">📢 Fariinta Kooxda</h3>
             </div>
             <div class="card" style="cursor: default;">
                 <div class="message-preview-text" style="font-size: var(--font-size-sm); white-space: pre-wrap;">${WhatsApp.generateGroupUpdate(campaign)}</div>
                 <button class="btn btn-secondary btn-block mt-md" onclick="App.copyGroupUpdate('${campaignId}')">
-                    📋 Kopioi viesti
+                    📋 Koobiya fariinta
                 </button>
             </div>
         `;
@@ -3047,13 +3047,13 @@ const App = {
         const campaign = DB.getCampaign(campaignId);
         const message = WhatsApp.generateGroupUpdate(campaign);
         navigator.clipboard.writeText(message);
-        Components.toast('Päivitysviesti kopioitu! 📋', 'success');
+        Components.toast('Fariintii waa la koobiyey! 📋', 'success');
     },
 
     copyDetailedList(campaignId) {
         const message = WhatsApp.generateDetailedList(campaignId);
         navigator.clipboard.writeText(message);
-        Components.toast('Yksityiskohtainen lista kopioitu! 📋', 'success');
+        Components.toast('Liiska faahfaahisan waa la koobiyey! 📋', 'success');
         DB.logAction(campaignId, 'copy_detailed_list', 'Copied detailed contributor list to clipboard');
     },
 
@@ -3077,7 +3077,7 @@ const App = {
                     <code style="flex: 1; font-size: var(--font-size-sm); word-break: break-all;">${joinLink}</code>
                 </div>
                 <button class="btn btn-primary btn-block" onclick="App.copyLink('${joinLink}')">
-                    📋 Kopioi linkki
+                    📋 Koobiya linkiga
                 </button>
             </div>
 
@@ -3087,7 +3087,7 @@ const App = {
             <div class="card" style="cursor: default;">
                 <div class="message-preview-text" style="font-size: var(--font-size-sm); white-space: pre-wrap; max-height: 200px; overflow-y: auto;">${WhatsApp.generateDetailedList(campaignId)}</div>
                 <button class="btn btn-secondary btn-block mt-md" onclick="App.copyDetailedList('${campaignId}')">
-                    📋 Kopioi lista
+                    📋 Koobiya liiska
                 </button>
             </div>
         `;
@@ -3095,7 +3095,7 @@ const App = {
 
     copyLink(link) {
         navigator.clipboard.writeText(link);
-        Components.toast('Linkki kopioitu! 📋', 'success');
+        Components.toast('Linkiga waa la koobiyey! 📋', 'success');
     },
 
     copyJoinLink(campaignId) {
@@ -3103,7 +3103,7 @@ const App = {
         if (!campaign) return;
         const link = WhatsApp.getJoinLink(campaign.code);
         navigator.clipboard.writeText(link);
-        Components.toast('Join-linkki kopioitu! 📋', 'success');
+        Components.toast('Join-linkiga waa la koobiyey! 📋', 'success');
         DB.logAction(campaignId, 'copy_join_link', 'Copied join link to clipboard');
     },
 
@@ -3111,7 +3111,7 @@ const App = {
         const campaign = DB.getCampaign(campaignId);
         const message = WhatsApp.generateAnnouncement(campaign);
         navigator.clipboard.writeText(message);
-        Components.toast('Viesti kopioitu! 📋', 'success');
+        Components.toast('Fariintii waa la koobiyey! 📋', 'success');
         DB.logAction(campaignId, 'copy_announcement', 'Copying announcement message to clipboard');
     },
 
