@@ -1568,11 +1568,11 @@ const App = {
         const now = new Date();
         const seconds = Math.floor((now - date) / 1000);
 
-        if (seconds < 60) return 'juuri nyt';
-        if (seconds < 3600) return `${Math.floor(seconds / 60)} min sitten`;
-        if (seconds < 86400) return `${Math.floor(seconds / 3600)} h sitten`;
-        if (seconds < 604800) return `${Math.floor(seconds / 86400)} pv sitten`;
-        return date.toLocaleDateString('fi-FI');
+        if (seconds < 60) return 'hadda';
+        if (seconds < 3600) return `${Math.floor(seconds / 60)} daqiiqo ka hor`;
+        if (seconds < 86400) return `${Math.floor(seconds / 3600)} saac ka hor`;
+        if (seconds < 604800) return `${Math.floor(seconds / 86400)} maalmood ka hor`;
+        return date.toLocaleDateString('so-SO');
     },
 
     // Initialize charts for stats dashboard
@@ -1590,7 +1590,7 @@ const App = {
                 data: {
                     labels: performance.map(c => c.name),
                     datasets: [{
-                        label: 'Kerätty %',
+                        label: 'La ururiyey %',
                         data: performance.map(c => c.percent),
                         backgroundColor: performance.map(c =>
                             c.percent >= 75 ? '#10b981' :
@@ -1640,10 +1640,10 @@ const App = {
                 data: {
                     labels: timeline.map(t => {
                         const date = new Date(t.date);
-                        return date.toLocaleDateString('fi-FI', { month: 'short', day: 'numeric' });
+                        return date.toLocaleDateString('so-SO', { month: 'short', day: 'numeric' });
                     }),
                     datasets: [{
-                        label: 'Kerätty',
+                        label: 'La ururiyey',
                         data: timeline.map(t => t.amount),
                         borderColor: '#10b981',
                         backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -1766,7 +1766,7 @@ const App = {
                             ✅ Notifications waa furan yihiin
                         </div>
                         <button class="btn btn-secondary btn-block" onclick="Notifications.test()">
-                            ${Icons.render('bell', 'icon icon-sm')} Test Notification
+                            ${Icons.render('bell', 'icon icon-sm')} Tijaabi Ogeysiis
                         </button>
                         <button class="btn btn-outline btn-block" onclick="Notifications.disable(); App.handleRoute();">
                             Xir Notifications

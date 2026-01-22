@@ -5,7 +5,7 @@
 
 const LoadingStates = {
     // Show loading overlay
-    show(message = 'Loading...') {
+    show(message = 'Waa la soo raraya...') {
         // Remove existing if any
         this.hide();
 

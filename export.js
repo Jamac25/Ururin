@@ -19,7 +19,7 @@ const ExcelExport = {
         // Create CSV header
         let csv = '\uFEFF'; // BOM for Excel UTF-8
         csv += 'OLOLEEYE - ' + campaign.name + '\n';
-        csv += 'Taariikhda: ' + new Date().toLocaleDateString() + '\n';
+        csv += 'Taariikhda: ' + new Date().toLocaleDateString('so-SO') + '\n';
         csv += 'Hadafka: ' + settings.currencySymbol + stats.goal.toLocaleString() + '\n';
         csv += 'La ururiyey: ' + settings.currencySymbol + stats.collected.toLocaleString() + ' (' + stats.percent + '%)\n';
         csv += '\n';
@@ -31,7 +31,7 @@ const ExcelExport = {
         contributors.forEach(c => {
             const status = c.status === 'paid' ? 'Bixiyey' :
                 c.status === 'declined' ? 'Diiday' : 'Sugaya';
-            const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString() : '';
+            const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('so-SO') : '';
 
             csv += `"${c.name}","${c.phone}","${settings.currencySymbol}${c.amount}","${status}","${date}"\n`;
         });
@@ -59,7 +59,7 @@ const ExcelExport = {
 
         let csv = '\uFEFF';
         csv += 'OLOLEEYE - Warbixinta Ololalaha\n';
-        csv += 'Taariikhda: ' + new Date().toLocaleDateString() + '\n\n';
+        csv += 'Taariikhda: ' + new Date().toLocaleDateString('so-SO') + '\n\n';
 
         csv += 'Magaca,Hadafka,La ururiyey,Boqolkiiba,Dadka,Bixiyey,Sugaya\n';
 
@@ -136,7 +136,7 @@ const ExcelExport = {
             </head>
             <body>
                 <h1>${campaign.emoji || '💰'} ${campaign.name}</h1>
-                <p><strong>Taariikhda:</strong> ${new Date().toLocaleDateString()}</p>
+                <p><strong>Taariikhda:</strong> ${new Date().toLocaleDateString('so-SO')}</p>
                 <p><strong>Hadafka:</strong> ${settings.currencySymbol}${stats.goal.toLocaleString()}</p>
                 <p><strong>La ururiyey:</strong> ${settings.currencySymbol}${stats.collected.toLocaleString()} (${stats.percent}%)</p>
                 <br>
@@ -154,7 +154,7 @@ const ExcelExport = {
         contributors.forEach((c, index) => {
             const statusClass = c.status === 'paid' ? 'paid' : c.status === 'declined' ? 'declined' : 'pending';
             const statusText = c.status === 'paid' ? '✅ Bixiyey' : c.status === 'declined' ? '❌ Diiday' : '⏳ Sugaya';
-            const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString() : '';
+            const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('so-SO') : '';
 
             html += `
                 <tr>
