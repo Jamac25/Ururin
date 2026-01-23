@@ -274,7 +274,12 @@ const App = {
 
     async init() {
         // Initialize authentication first
-        await Auth.init();
+        try {
+            await Auth.init();
+        } catch (error) {
+            console.error('Auth initialization failed:', error);
+            Components.toast('Connection error: Continuing in offline mode', 'warning');
+        }
 
         // Listen for auth state changes
         Auth.onAuthChange((user, profile) => {
@@ -3368,7 +3373,11 @@ const App = {
             Components.toast('Waad soo gashay!', 'success');
             this.navigate('/');
         } else {
-            Components.toast(result.error || 'Login failed', 'error');
+            if (result.error && result.error.includes('confirm')) {
+                Components.toast('Fadlan xaqiiji email-kaaga (Check your email)', 'warning');
+            } else {
+                Components.toast(result.error || 'Login failed', 'error');
+            }
             btn.disabled = false;
             btn.innerHTML = `${Icons.render('login', 'icon icon-sm')} Gal`;
         }

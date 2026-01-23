@@ -267,38 +267,40 @@
         <!-- Screens will be injected here -->
     </div>
 
+    <script src="config.js"></script>
     <script>
-        const API = 'http://localhost:5173/api';
+        const API = CONFIG.API_URL + '/api';
+
         const SHOP_ID = 'shop_1';
-        let currentState = { screen: 'login', data: {} };
+        let currentState = {screen: 'login', data: { } };
 
         async function init() {
             render();
         }
 
-        function navigate(screen, data = {}) {
+        function navigate(screen, data = { }) {
             currentState = { screen, data };
-            render();
+        render();
         }
 
         async function fetchDashboard() {
             const res = await fetch(`${API}/shop/${SHOP_ID}/dashboard`);
-            return res.json();
+        return res.json();
         }
 
         async function fetchCustomers(search = '') {
             const res = await fetch(`${API}/shop/${SHOP_ID}/customers?search=${search}`);
-            return res.json();
+        return res.json();
         }
 
         function money(n) { return '$' + Math.round(n * 100) / 100; }
 
         async function render() {
             const app = document.getElementById('app');
-            app.innerHTML = '';
+        app.innerHTML = '';
 
-            if (currentState.screen === 'login') {
-                app.innerHTML = `
+        if (currentState.screen === 'login') {
+            app.innerHTML = `
                     <div id="screen-login">
                         <div style="font-size: 48px; margin-bottom: 20px;">🏪</div>
                         <h1 style="font-size: 32px; margin-bottom: 8px;">Ku Qaado</h1>
@@ -312,31 +314,31 @@
                 `;
             } else if (currentState.screen === 'dashboard') {
                 const stats = await fetchDashboard();
-                const customersRes = await fetchCustomers();
+        const customersRes = await fetchCustomers();
 
-                app.innerHTML = `
-                    <div class="header">
-                        <h1>Ku Qaado</h1>
-                        <div onclick="navigate('notifications')" style="cursor:pointer">🔔</div>
-                    </div>
-                    <div class="content">
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <span class="stat-label">Deyn furan</span>
-                                <span class="stat-value">${money(stats.totalOutstanding)}</span>
-                            </div>
-                            <div class="stat-card light">
-                                <span class="stat-label">La bixiyay maanta</span>
-                                <span class="stat-value">${money(stats.paidToday)}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="section-title">
-                            <span>Macaamiisha</span>
-                            <button onclick="alert('Demo check: Customer List functionality active')" style="border:none;background:none;color:var(--accent);font-weight:700">+ Ku dar</button>
-                        </div>
-                        
-                        ${customersRes.customers.map(c => `
+        app.innerHTML = `
+        <div class="header">
+            <h1>Ku Qaado</h1>
+            <div onclick="navigate('notifications')" style="cursor:pointer">🔔</div>
+        </div>
+        <div class="content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-label">Deyn furan</span>
+                    <span class="stat-value">${money(stats.totalOutstanding)}</span>
+                </div>
+                <div class="stat-card light">
+                    <span class="stat-label">La bixiyay maanta</span>
+                    <span class="stat-value">${money(stats.paidToday)}</span>
+                </div>
+            </div>
+
+            <div class="section-title">
+                <span>Macaamiisha</span>
+                <button onclick="alert('Demo check: Customer List functionality active')" style="border:none;background:none;color:var(--accent);font-weight:700">+ Ku dar</button>
+            </div>
+
+            ${customersRes.customers.map(c => `
                             <div class="card" onclick="navigate('customerDetail', {id: '${c.id}'})">
                                 <div class="avatar">${c.name[0]}</div>
                                 <div class="card-info">
@@ -349,13 +351,13 @@
                                 </div>
                             </div>
                         `).join('')}
-                        
-                        <button class="btn btn-primary" style="margin-top: 20px" onclick="navigate('createDebt')">Deyn Cusub</button>
-                    </div>
-                    ${renderNav('dashboard')}
-                `;
+
+            <button class="btn btn-primary" style="margin-top: 20px" onclick="navigate('createDebt')">Deyn Cusub</button>
+        </div>
+        ${renderNav('dashboard')}
+        `;
             } else if (currentState.screen === 'createDebt') {
-                app.innerHTML = `
+            app.innerHTML = `
                     <div class="header">
                         <button onclick="navigate('dashboard')" style="border:none;background:none;font-size:20px">←</button>
                         <h1>Deyn Cusub</h1>
@@ -381,39 +383,39 @@
 
         function renderNav(active) {
             return `
-                <div class="nav">
-                    <button class="nav-item ${active === 'dashboard' ? 'active' : ''}" onclick="navigate('dashboard')">
-                        <span class="nav-icon">💰</span><span class="nav-label">Deyn</span>
-                    </button>
-                    <button class="nav-item ${active === 'payments' ? 'active' : ''}" onclick="navigate('payments')">
-                        <span class="nav-icon">🧾</span><span class="nav-label">Lacag</span>
-                    </button>
-                    <button class="nav-item ${active === 'customers' ? 'active' : ''}" onclick="navigate('customers')">
-                        <span class="nav-icon">👥</span><span class="nav-label">Macmiil</span>
-                    </button>
-                    <button class="nav-item ${active === 'settings' ? 'active' : ''}" onclick="navigate('settings')">
-                        <span class="nav-icon">⚙️</span><span class="nav-label">Asetin</span>
-                    </button>
-                </div>
-            `;
+        <div class="nav">
+            <button class="nav-item ${active === 'dashboard' ? 'active' : ''}" onclick="navigate('dashboard')">
+                <span class="nav-icon">💰</span><span class="nav-label">Deyn</span>
+            </button>
+            <button class="nav-item ${active === 'payments' ? 'active' : ''}" onclick="navigate('payments')">
+                <span class="nav-icon">🧾</span><span class="nav-label">Lacag</span>
+            </button>
+            <button class="nav-item ${active === 'customers' ? 'active' : ''}" onclick="navigate('customers')">
+                <span class="nav-icon">👥</span><span class="nav-label">Macmiil</span>
+            </button>
+            <button class="nav-item ${active === 'settings' ? 'active' : ''}" onclick="navigate('settings')">
+                <span class="nav-icon">⚙️</span><span class="nav-label">Asetin</span>
+            </button>
+        </div>
+        `;
         }
 
         async function handleCreateDebt() {
             const customerId = document.getElementById('debt-customer').value;
-            const items = JSON.parse(document.getElementById('debt-items').value);
+        const items = JSON.parse(document.getElementById('debt-items').value);
 
-            const res = await fetch(`${API}/debts`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ shopId: SHOP_ID, customerId, items })
+        const res = await fetch(`${API}/debts`, {
+            method: 'POST',
+        headers: {'Content-Type': 'application/json' },
+        body: JSON.stringify({shopId: SHOP_ID, customerId, items })
             });
-            const data = await res.json();
-            if (res.ok) {
-                alert('WhatsApp Link generated! Sent to Portal Simulator.');
-                window.parent.postMessage({ type: 'DEBT_CREATED', url: data.whatsappUrl }, '*');
-                navigate('dashboard');
+        const data = await res.json();
+        if (res.ok) {
+            alert('WhatsApp Link generated! Sent to Portal Simulator.');
+        window.parent.postMessage({type: 'DEBT_CREATED', url: data.whatsappUrl }, '*');
+        navigate('dashboard');
             } else {
-                alert('Khalad: ' + data.error);
+            alert('Khalad: ' + data.error);
             }
         }
 

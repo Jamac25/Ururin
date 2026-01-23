@@ -233,9 +233,14 @@
     </div>
   </div>
 
+  <script src="config.js"></script>
   <script>
-    const API = 'http://localhost:5173/api';
+    // Use the centralized API URL from config.js (appends /api automatically via helper or manually)
+    // For this file, we only need the base for the sessions
+    const API = CONFIG.API_URL + '/api';
+
     let currentPhone = '';
+
 
     async function sendOTP() {
       const phone = document.getElementById('phone').value.trim();

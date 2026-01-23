@@ -432,12 +432,15 @@
         </div>
     </div>
 
+    <script src="config.js"></script>
     <script>
-        const API = "http://localhost:5173";
+        const API = CONFIG.API_URL;
+
         const params = new URLSearchParams(location.search);
         const customerId = params.get("customer") || "cus_1";
 
         let currentDebt = null;
+
         let selectedMethod = null;
 
         function showScreen(id) {
@@ -466,11 +469,11 @@
 
                 if (currentDebt) {
                     const itemsHtml = currentDebt.items.map(it => `
-                        <div class="item">
-                            <span>${it.name} ${it.qty}x</span>
-                            <span>${fmt(it.unitPrice)}</span>
-                        </div>
-                    `).join("");
+        <div class="item">
+            <span>${it.name} ${it.qty}x</span>
+            <span>${fmt(it.unitPrice)}</span>
+        </div>
+        `).join("");
                     document.getElementById('debt-items').innerHTML = itemsHtml;
                     document.getElementById('debt-total').textContent = fmt(currentDebt.total);
                     document.getElementById('due-date').textContent = new Date(currentDebt.dueAt).toLocaleDateString('so-SO', { month: 'long', day: 'numeric', year: 'numeric' });
