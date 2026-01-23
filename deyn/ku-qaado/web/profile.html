@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ku Qaado — Profile</title>
+    <title>Ku Qaado — Heshiiska deynta</title>
     <style>
         * {
             margin: 0;
@@ -14,406 +14,421 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f8f9fa;
-            color: #1f2937;
+            background: #F8FAFC;
+            color: #334155;
+            line-height: 1.5;
         }
 
         .container {
             max-width: 480px;
             margin: 0 auto;
             min-height: 100vh;
-            background: white;
-        }
-
-        /* Header */
-        .header {
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid #f3f4f6;
-        }
-
-        .logo {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
-            display: grid;
-            place-items: center;
-            font-size: 20px;
-        }
-
-        .header-text h1 {
-            font-size: 20px;
-            font-weight: 800;
-            color: #1f2937;
-        }
-
-        .header-text p {
-            font-size: 13px;
-            color: #6b7280;
-            margin-top: 2px;
-        }
-
-        /* Profile Card */
-        .profile-card {
-            background: white;
-            padding: 24px 20px;
-            border-bottom: 1px solid #f3f4f6;
-        }
-
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            display: grid;
-            place-items: center;
-            font-size: 36px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .profile-info h2 {
-            font-size: 20px;
-            font-weight: 800;
-            color: #1f2937;
-            margin-bottom: 4px;
-        }
-
-        .profile-info .phone {
-            font-size: 13px;
-            color: #6b7280;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .profile-info .phone::before {
-            content: '📱';
-        }
-
-        .balance-card {
-            background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
-            border-radius: 20px;
             padding: 20px;
-            color: white;
-            margin-top: 16px;
-        }
-
-        .balance-row {
             display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
+            flex-direction: column;
         }
 
-        .balance-icon {
-            width: 48px;
-            height: 48px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            display: grid;
-            place-items: center;
+        /* Typography */
+        h1 {
             font-size: 24px;
-        }
-
-        .balance-amount {
-            font-size: 36px;
-            font-weight: 900;
-            letter-spacing: -0.02em;
-        }
-
-        .balance-label {
-            font-size: 13px;
-            opacity: 0.9;
-        }
-
-        .balance-limit {
-            font-size: 14px;
-            opacity: 0.8;
-            margin-top: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .balance-limit::before {
-            content: '🎯';
-        }
-
-        .shop-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255, 255, 255, 0.15);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            margin-top: 12px;
-        }
-
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .status-ok {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .status-warn {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .status-bad {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        /* Section */
-        .section {
-            padding: 20px;
-        }
-
-        .section-title {
-            font-size: 18px;
             font-weight: 800;
-            margin-bottom: 16px;
-            color: #1f2937;
+            color: #0F172A;
+            margin-bottom: 8px;
         }
 
-        /* Debt Card */
-        .debt-card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            transition: all 0.2s;
-        }
-
-        .debt-card:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
-
-        .debt-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .debt-shop {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .subtitle {
             font-size: 14px;
-            font-weight: 700;
-            color: #1f2937;
+            color: #64748B;
+            margin-bottom: 32px;
         }
 
-        .debt-shop::before {
-            content: '🏪';
+        /* Card */
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+            border: 1px solid #E2E8F0;
         }
 
-        .debt-amount {
-            font-size: 18px;
-            font-weight: 900;
-            color: #1f2937;
+        /* Items */
+        .item-list {
+            margin: 20px 0;
         }
 
-        .debt-items {
-            background: #f9fafb;
-            border-radius: 12px;
-            padding: 12px;
-            margin: 12px 0;
-        }
-
-        .debt-item {
+        .item {
             display: flex;
             justify-content: space-between;
-            padding: 6px 0;
-            font-size: 13px;
+            padding: 12px 0;
+            border-bottom: 1px solid #F1F5F9;
         }
 
-        .debt-item-name {
-            color: #6b7280;
+        .item:last-child {
+            border-bottom: none;
         }
 
-        .debt-item-price {
-            font-weight: 700;
-            color: #1f2937;
-        }
-
-        .debt-footer {
+        .total-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-top: 12px;
-            font-size: 12px;
-            color: #6b7280;
+            padding-top: 16px;
+            font-size: 20px;
+            font-weight: 800;
+            color: #0F172A;
         }
 
-        .debt-date::before {
-            content: '📅';
-            margin-right: 4px;
-        }
-
-        .payment-badge {
-            background: #d1fae5;
-            color: #065f46;
-            padding: 6px 10px;
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 700;
-            margin-top: 8px;
-            display: inline-block;
-        }
-
-        /* Button */
+        /* Buttons */
         .btn {
             width: 100%;
-            border: none;
+            height: 56px;
             border-radius: 14px;
-            padding: 16px;
             font-size: 16px;
-            font-weight: 800;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #0F172A;
+            color: white;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid #E2E8F0;
+            color: #0F172A;
+        }
+
+        /* Input */
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #64748B;
+        }
+
+        .input-group input {
+            width: 100%;
+            height: 52px;
+            border-radius: 12px;
+            border: 1px solid #E2E8F0;
+            padding: 0 16px;
+            font-size: 16px;
+            color: #0F172A;
+        }
+
+        /* Payment methods */
+        .payment-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .method {
+            border: 1px solid #E2E8F0;
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
             cursor: pointer;
             transition: all 0.2s;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
-            color: white;
+        .method.active {
+            border-color: #0F172A;
+            background: #F8FAFC;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.3);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Payment History */
-        .payment-card {
-            background: #f0fdf4;
-            border: 1px solid #d1fae5;
-            border-radius: 12px;
-            padding: 12px;
+        .method img {
+            height: 32px;
             margin-bottom: 8px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        .payment-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        /* Screens */
+        .screen {
+            display: none;
         }
 
-        .payment-date {
-            font-size: 12px;
-            color: #6b7280;
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
         }
 
-        .payment-amount {
-            font-size: 16px;
-            font-weight: 900;
-            color: #065f46;
-        }
-
-        .payment-note {
-            font-size: 11px;
-            color: #6b7280;
-            margin-top: 4px;
-        }
-
-        /* Loading */
-        .skeleton {
-            background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 12px;
-        }
-
-        @keyframes loading {
-            0% {
-                background-position: 200% 0
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
             }
 
-            100% {
-                background-position: -200% 0
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
 
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #9ca3af;
-        }
-
-        .empty-state-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-        }
-
-        /* Footer Note */
-        .footer-note {
-            text-align: center;
-            padding: 20px;
-            font-size: 12px;
-            color: #9ca3af;
+        .check-icon {
+            width: 80px;
+            height: 80px;
+            background: #10B981;
+            color: white;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 40px;
+            margin: 0 auto 24px;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="logo">🏪</div>
-            <div class="header-text">
-                <h1>Ku Qaado</h1>
-                <p id="greeting">Loading...</p>
+        <!-- Step 1: Contract View -->
+        <div id="step-contract" class="screen active">
+            <h1>Heshiiska deynta</h1>
+            <p class="subtitle" id="shop-name">Soo raraya...</p>
+
+            <div class="card">
+                <div class="item-list" id="debt-items">
+                    <!-- Items will be injected -->
+                </div>
+                <div class="total-row">
+                    <span>Wadarta</span>
+                    <span id="debt-total">$0.00</span>
+                </div>
+            </div>
+
+            <div class="card" style="padding: 16px;">
+                <p style="font-size: 14px; color: #64748B;">
+                    Markaad ogolaato deyntan, waxaad ballan qaadaysaa inaad ku bixiso dhexda
+                    <strong id="due-date">...</strong>
+                </p>
+                <p style="font-size: 11px; color: #94A3B8; margin-top: 12px; font-style: italic;">
+                    Heshiiskani wuxuu ku salaysan yahay kalsooni iyo caddayn dijitaal ah.
+                </p>
+            </div>
+
+            <button class="btn btn-primary" onclick="showScreen('step-otp')">Sii wad</button>
+        </div>
+
+        <!-- Step 2: OTP Verify -->
+        <div id="step-otp" class="screen">
+            <h1 style="font-size: 28px; font-weight: 850; margin-bottom: 8px;">Xaqiiji lambarka</h1>
+            <p class="subtitle">Koodh ayaa lagu soo Lambarkars</p>
+
+            <div class="card" style="padding: 32px 24px; text-align: center;">
+                <div style="display: flex; justify-content: center; gap: 12px; margin-bottom: 24px;">
+                    <div
+                        style="width: 56px; height: 64px; background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 12px; display: grid; place-items: center; font-size: 28px; font-weight: 800;">
+                        4</div>
+                    <div
+                        style="width: 56px; height: 64px; background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 12px; display: grid; place-items: center; font-size: 28px; font-weight: 800;">
+                        3</div>
+                    <div
+                        style="width: 56px; height: 64px; background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 12px; display: grid; place-items: center; font-size: 28px; font-weight: 800;">
+                        6</div>
+                    <div
+                        style="width: 56px; height: 64px; background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 12px; display: grid; place-items: center; font-size: 28px; font-weight: 800;">
+                        8</div>
+                </div>
+
+                <div class="input-group">
+                    <label>Geli koodhka OTP</label>
+                    <input type="number" placeholder="123456" id="otp-input"
+                        style="text-align: center; letter-spacing: 4px; font-weight: 800; font-size: 20px;">
+                </div>
+
+                <button class="btn btn-primary" onclick="verifyOtp()" style="background: #1E293B;">Xaqiiji</button>
+                <button class="btn btn-outline" style="margin-top: 16px; border: none; font-size: 14px; color: #64748B;"
+                    onclick="showScreen('step-contract')">Dib u soo dir Koodh</button>
             </div>
         </div>
 
-        <!-- Profile Card -->
-        <div class="profile-card" id="profileCard"></div>
+        <!-- Step 3: Accept Contract -->
+        <div id="step-accept" class="screen">
+            <h1>Ballan-qaad</h1>
+            <p class="subtitle">Fadhlan akhri oo saxiix heshiiska</p>
 
-        <!-- Debts Section -->
-        <div class="section">
-            <div class="section-title">Deymahaaga jira</div>
-            <div id="debts"></div>
+            <div class="card" style="font-size: 14px; color: #334155; line-height: 1.6;">
+                <p>Aniga oo ah <strong id="customer-name">...</strong>, waxaan cadaynayaa inaan qaatay deynta kor ku
+                    xusan.</p>
+                <div style="margin-top: 20px; display: flex; gap: 12px; align-items: flex-start;">
+                    <input type="checkbox" id="accept-check" style="width: 20px; height: 20px; margin-top: 2px;">
+                    <label for="accept-check">Waxaan ogolaaday shuruudaha dukaanka waxaana ballan qaadayaa bixinta
+                        lacagta.</label>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="acceptContract()">Waan ogolaaday</button>
         </div>
 
-        <!-- Payments Section -->
-        <div class="section" id="paymentsSection" style="display:none;">
-            <div class="section-title">Taariikhda lacag bixinta</div>
-            <div id="payments"></div>
+        <!-- Step 4: Payment Method -->
+        <div id="step-payment" class="screen">
+            <h1 style="font-size: 28px; font-weight: 850; margin-bottom: 8px;">Bisin</h1>
+            <p class="subtitle">Dooro habka aad rabto inaad lacagta ku bixiso</p>
+
+            <div class="payment-methods" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+                <div class="method" onclick="selectMethod('zaad', this)"
+                    style="display: flex; align-items: center; justify-content: space-between; background: white; border-radius: 16px; padding: 16px; border: 1.5px solid #E2E8F0; transition: all 0.2s;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div
+                            style="width: 44px; height: 44px; background: #E0E7FF; border-radius: 12px; display: grid; place-items: center;">
+                            <span style="font-size: 24px;">📱</span>
+                        </div>
+                        <span style="font-weight: 800; font-size: 17px;">Zaad</span>
+                    </div>
+                    <div class="check-mark"
+                        style="width: 20px; height: 20px; border-radius: 10px; border: 2px solid #CBD5E1; display: grid; place-items: center;">
+                        <span style="color: white; font-size: 12px; display: none;">✓</span>
+                    </div>
+                </div>
+
+                <div class="method" onclick="selectMethod('dailab', this)"
+                    style="display: flex; align-items: center; justify-content: space-between; background: white; border-radius: 16px; padding: 16px; border: 1.5px solid #E2E8F0; transition: all 0.2s;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div
+                            style="width: 44px; height: 44px; background: #FDE68A; border-radius: 12px; display: grid; place-items: center;">
+                            <span style="font-size: 24px;">🟡</span>
+                        </div>
+                        <span style="font-weight: 800; font-size: 17px;">Dailab</span>
+                    </div>
+                    <div class="check-mark"
+                        style="width: 20px; height: 20px; border-radius: 10px; border: 2px solid #CBD5E1; display: grid; place-items: center;">
+                        <span style="color: white; font-size: 12px; display: none;">✓</span>
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                .method.active {
+                    border-color: #1E293B !important;
+                    background: #F8FAFC !important;
+                }
+
+                .method.active .check-mark {
+                    background: #2563EB;
+                    border-color: #2563EB;
+                }
+
+                .method.active .check-mark span {
+                    display: block !important;
+                }
+            </style>
+
+            <div id="payment-loader"
+                style="display: none; text-align: center; margin-bottom: 24px; padding: 20px; background: #F1F5F9; border-radius: 20px;">
+                <div
+                    style="width: 30px; height: 30px; border: 3px solid #CBD5E1; border-top-color: #1E293B; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px;">
+                </div>
+                <p style="font-weight: 800; color: #1E293B;">Lacag bixinta ayaa socota...</p>
+                <p style="font-size: 12px; color: #64748B; margin-top: 4px;">Fadlan sug inta aan xaqiijinaynno bixinta.
+                </p>
+            </div>
+
+            <button class="btn btn-primary" id="pay-btn" onclick="pay()"
+                style="background: #1E293B; border-radius: 16px; height: 56px;">Bixi hadda</button>
+            <button class="btn btn-outline" style="margin-top: 12px; border-radius: 16px;"
+                onclick="showScreen('step-accept')">Dib u noqo</button>
+
+
+            <style>
+                @keyframes spin {
+                    to {
+                        transform: rotate(360deg);
+                    }
+                }
+            </style>
+        </div>
+
+        <!-- Step 5: Success -->
+        <div id="step-success" class="screen">
+            <div style="text-align: center; margin-top: 60px;">
+                <div class="check-icon"
+                    style="width: 100px; height: 100px; background: #10B981; color: white; border-radius: 50%; display: grid; place-items: center; font-size: 50px; margin: 0 auto 32px; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);">
+                    ✓</div>
+                <h1 style="font-size: 32px; font-weight: 900; color: #059669; margin-bottom: 12px;">Bicintu way
+                    guulaysatay</h1>
+                <p class="subtitle" style="font-size: 16px;">Mahadsandi, Lacagta wea la helay.</p>
+
+                <div class="card"
+                    style="text-align: center; padding: 32px; border: none; background: #F8FAFC; border-radius: 24px;">
+                    <p style="font-size: 14px; color: #64748B; margin-bottom: 8px; font-weight: 600;">Deynta hadhay:</p>
+                    <p style="font-size: 40px; font-weight: 900; color: #1E293B; letter-spacing: -1px;">$0.00</p>
+                </div>
+
+                <div style="gap: 12px; display: flex; flex-direction: column; margin-top: 32px;">
+                    <button class="btn btn-primary" onclick="showScreen('step-contract')"
+                        style="background: #1E293B;">Waan aqbalay</button>
+                    <button class="btn btn-outline" onclick="location.reload()"
+                        style="border: none; color: #64748B;">Xir</button>
+                </div>
+
+                <!-- Step 6: Cancel Confirmation -->
+                <div id="step-cancel-confirm" class="screen">
+                    <div style="text-align: center; margin-top: 60px;">
+                        <div
+                            style="width: 80px; height: 80px; background: #FEE2E2; color: #DC2626; border-radius: 50%; display: grid; place-items: center; font-size: 40px; margin: 0 auto 24px;">
+                            ❓</div>
+                        <h1 style="font-size: 28px; font-weight: 850; margin-bottom: 8px;">Ma hubtaa?</h1>
+                        <p class="subtitle">Heshiiska deynta waa la joojinayaa haddii aad sii wadato.</p>
+
+                        <div class="card" style="text-align: left; background: #F8FAFC; border: 1.5px solid #E2E8F0;">
+                            <p style="font-size: 14px; color: #64748B; line-height: 1.5;">Markaad joojiso heshiiska,
+                                xogtaada waa laga tirtiri doonaa dukaanka, dhibco kalsooniduna way yaraan doonaan.</p>
+                        </div>
+
+                        <div style="gap: 12px; display: flex; flex-direction: column; margin-top: 32px;">
+                            <button class="btn btn-primary" onclick="showScreen('step-cancel-success')"
+                                style="background: #DC2626;">Haa, Jooji</button>
+                            <button class="btn btn-outline" onclick="showScreen('step-payment')"
+                                style="border-radius: 16px;">Maya, sii wad</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 7: Cancel Success -->
+                <div id="step-cancel-success" class="screen">
+                    <div style="text-align: center; margin-top: 60px;">
+                        <div
+                            style="width: 80px; height: 80px; background: #E5E7EB; color: #64748B; border-radius: 50%; display: grid; place-items: center; font-size: 40px; margin: 0 auto 24px;">
+                            ✕</div>
+                        <h1 style="font-size: 28px; font-weight: 850; margin-bottom: 8px;">Heshiiska waa la joojiyay
+                        </h1>
+                        <p class="subtitle">Waad ku mahadsantihiin isticmaalka Ku Qaado.</p>
+
+                        <button class="btn btn-outline" onclick="location.reload()"
+                            style="margin-top: 32px;">Xir</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Footer -->
-        <div class="footer-note">
-            Tani waa link gaar ah. Haddii aad aragto khalad, la xiriir dukaanka.
+        <div style="margin-top: auto; padding-top: 40px; text-align: center;">
+            <a href="https://wa.me/252630000000?text=Salaam, waxaan u baahanahay caawin Ku Qaado."
+                style="text-decoration: none; color: #0D9488; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
+                <span>🆘</span> Caawin (WhatsApp)
+            </a>
+            <div style="margin-top: 12px; font-size: 12px; color: #94A3B8;">
+                <a href="index.html" style="text-decoration: none; color: #94A3B8;">Guriga (Home)</a> • Ku Qaado —
+                Digital Trust System
+            </div>
         </div>
     </div>
 
@@ -422,167 +437,133 @@
         const params = new URLSearchParams(location.search);
         const customerId = params.get("customer") || "cus_1";
 
-        const $greeting = document.getElementById("greeting");
-        const $profileCard = document.getElementById("profileCard");
-        const $debts = document.getElementById("debts");
-        const $payments = document.getElementById("payments");
-        const $paymentsSection = document.getElementById("paymentsSection");
+        let currentDebt = null;
+        let selectedMethod = null;
 
-        function fmt(n) { return "$" + (Math.round(n * 100) / 100); }
-        function dateStr(iso) {
-            const d = new Date(iso);
-            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            window.scrollTo(0, 0);
         }
 
-        function statusBadge(status) {
-            if (status === "PAID") return `<span class="status-badge status-ok">Bixiyay</span>`;
-            if (status === "APPROVED") return `<span class="status-badge status-ok">La ansixiyay</span>`;
-            if (status === "OVERDUE") return `<span class="status-badge status-bad">Dhacay</span>`;
-            return `<span class="status-badge status-warn">Sugaya</span>`;
-        }
-
-        function showSkeleton() {
-            $profileCard.innerHTML = `<div class="skeleton" style="height:200px;"></div>`;
-            $debts.innerHTML = `<div class="skeleton" style="height:150px;"></div>`;
-        }
+        function fmt(n) { return "$" + (Math.round(n * 100) / 100).toFixed(2); }
 
         async function load() {
-            showSkeleton();
+            try {
+                const r = await fetch(`${API}/api/public/customer/${customerId}`);
+                const data = await r.json();
 
-            const r = await fetch(`${API}/api/public/customer/${customerId}`);
-            const data = await r.json();
+                if (!r.ok) return alert("Profile lama helin");
 
-            if (!r.ok) {
-                $greeting.textContent = "Profile lama helin.";
-                $profileCard.innerHTML = `
-            <div class="empty-state">
-              <div class="empty-state-icon">❌</div>
-              <div>Macluumaad lama helin</div>
-            </div>
-          `;
-                $debts.innerHTML = "";
-                return;
-            }
+                document.getElementById('shop-name').textContent = data.shop.name;
+                document.getElementById('customer-name').textContent = data.customer.name;
 
-            const c = data.customer;
-            const shop = data.shop;
-
-            $greeting.textContent = `Salaam ${c.name}, tani waa profile-kaaga deynta.`;
-
-            // Status badge
-            let statusBadgeHtml = '';
-            if (c.hasOverdue) {
-                statusBadgeHtml = `<span class="status-badge status-bad">Xiran</span>`;
-            } else if (c.totalOpen >= c.creditLimit) {
-                statusBadgeHtml = `<span class="status-badge status-warn">Limit buuxa</span>`;
-            } else {
-                statusBadgeHtml = `<span class="status-badge status-ok">Hoos limitiga</span>`;
-            }
-
-            // Profile card
-            $profileCard.innerHTML = `
-          <div class="profile-header">
-            <div class="avatar">👤</div>
-            <div class="profile-info">
-              <h2>${c.name}</h2>
-              <div class="phone">${c.phoneMasked}</div>
-            </div>
-          </div>
-          
-          <div class="balance-card">
-            <div class="balance-row">
-              <div class="balance-icon">$</div>
-              <div>
-                <div class="balance-amount">${fmt(c.totalOpen)}</div>
-                <div class="balance-label">TOTAL</div>
-              </div>
-            </div>
-            <div class="balance-limit">Limit: ${fmt(c.creditLimit)}</div>
-            ${c.totalPaid > 0 ? `<div class="balance-limit">La bixiyay: ${fmt(c.totalPaid)}</div>` : ''}
-            <div class="shop-badge">🏪 ${shop.name}</div>
-          </div>
-          
-          <div style="margin-top:12px;">
-            ${statusBadgeHtml}
-          </div>
-        `;
-
-            // Debts
-            $debts.innerHTML = "";
-            if (data.debts.length === 0) {
-                $debts.innerHTML = `
-            <div class="empty-state">
-              <div class="empty-state-icon">✅</div>
-              <div>Deyn malaha</div>
-            </div>
-          `;
-            } else {
-                for (const d of data.debts) {
-                    const items = d.items.map(it => `
-              <div class="debt-item">
-                <span class="debt-item-name">${it.name} ${it.qty}x</span>
-                <span class="debt-item-price">${fmt(it.unitPrice)}</span>
-              </div>
-            `).join("");
-
-                    const canApprove = d.status === "PENDING";
-
-                    const el = document.createElement("div");
-                    el.className = "debt-card";
-                    el.innerHTML = `
-              <div class="debt-header">
-                <div class="debt-shop">${shop.name}</div>
-                <div class="debt-amount">${fmt(d.total)}</div>
-              </div>
-              
-              <div class="debt-items">${items}</div>
-              
-              ${d.totalPaid > 0 ? `
-                <div class="payment-badge">
-                  ✓ La bixiyay: ${fmt(d.totalPaid)} | Haray: ${fmt(d.remaining)}
-                </div>
-              ` : ''}
-              
-              <div class="debt-footer">
-                <span class="debt-date">${dateStr(d.createdAt)}</span>
-                ${statusBadge(d.status)}
-              </div>
-              
-              <button class="btn btn-primary" ${canApprove ? "" : "disabled"} data-debt="${d.id}" style="margin-top:12px;">
-                Waan Oggolaaday
-              </button>
-            `;
-
-                    el.querySelector("button").addEventListener("click", async (e) => {
-                        const id = e.currentTarget.getAttribute("data-debt");
-                        e.currentTarget.disabled = true;
-                        e.currentTarget.textContent = "Sugaya...";
-                        await fetch(`${API}/api/public/debts/${id}/approve`, { method: "POST" });
-                        await load();
-                    });
-
-                    $debts.appendChild(el);
+                // For MVP, find the first pending debt
+                currentDebt = data.debts.find(d => d.status === "PENDING_ACCEPT");
+                if (!currentDebt && data.debts.length > 0) {
+                    currentDebt = data.debts[0];
                 }
-            }
 
-            // Payment history
-            if (data.payments && data.payments.length > 0) {
-                $paymentsSection.style.display = "block";
-                $payments.innerHTML = "";
-                for (const p of data.payments) {
-                    const el = document.createElement("div");
-                    el.className = "payment-card";
-                    el.innerHTML = `
-              <div class="payment-row">
-                <span class="payment-date">${dateStr(p.createdAt)}</span>
-                <span class="payment-amount">${fmt(p.amount)}</span>
-              </div>
-              ${p.note ? `<div class="payment-note">${p.note}</div>` : ''}
-            `;
-                    $payments.appendChild(el);
+                if (currentDebt) {
+                    const itemsHtml = currentDebt.items.map(it => `
+                        <div class="item">
+                            <span>${it.name} ${it.qty}x</span>
+                            <span>${fmt(it.unitPrice)}</span>
+                        </div>
+                    `).join("");
+                    document.getElementById('debt-items').innerHTML = itemsHtml;
+                    document.getElementById('debt-total').textContent = fmt(currentDebt.total);
+                    document.getElementById('due-date').textContent = new Date(currentDebt.dueAt).toLocaleDateString('so-SO', { month: 'long', day: 'numeric', year: 'numeric' });
                 }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function verifyOtp() {
+            const otp = document.getElementById('otp-input').value;
+            if (otp === "123456") {
+                showScreen('step-accept');
             } else {
-                $paymentsSection.style.display = "none";
+                alert("OTP waa khalad. Isku day 123456");
+            }
+        }
+
+        async function acceptContract() {
+            if (!document.getElementById('accept-check').checked) {
+                return alert("Fadlan ogolaada shuruudaha");
+            }
+            if (currentDebt && currentDebt.status === "PENDING_ACCEPT") {
+                await fetch(`${API}/api/public/debts/${currentDebt.id}/approve`, { method: "POST" });
+            }
+            showScreen('step-payment');
+        }
+
+        function selectMethod(m, el) {
+            selectedMethod = m;
+            document.querySelectorAll('.method').forEach(m => m.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        async function pay() {
+            if (!selectedMethod) return alert("Dooro habka lacag bixinta");
+
+            document.getElementById('pay-btn').style.display = 'none';
+            document.getElementById('payment-loader').style.display = 'block';
+
+            try {
+                // Initiate payment transaction
+                const response = await fetch(`${API}/api/payments/initiate`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        debtId: currentDebt.id,
+                        amount: currentDebt.total,
+                        method: selectedMethod,
+                        customerPhone: "+252619000111" // In real app, this would come from customer data
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    alert("Khalad ayaa dhacay: " + (data.error || "Unknown"));
+                    document.getElementById('pay-btn').style.display = 'block';
+                    document.getElementById('payment-loader').style.display = 'none';
+                    return;
+                }
+
+                // Poll for payment status
+                const txnId = data.transaction.id;
+                let attempts = 0;
+                const maxAttempts = 20; // 20 attempts * 500ms = 10 seconds max
+
+                const checkStatus = async () => {
+                    attempts++;
+                    const statusRes = await fetch(`${API}/api/payments/status/${txnId}`);
+                    const statusData = await statusRes.json();
+
+                    if (statusData.transaction.status === "COMPLETED") {
+                        showScreen('step-success');
+                    } else if (statusData.transaction.status === "FAILED") {
+                        alert("Lacag bixintu waa fashilantay: " + statusData.transaction.failureReason);
+                        document.getElementById('pay-btn').style.display = 'block';
+                        document.getElementById('payment-loader').style.display = 'none';
+                    } else if (attempts < maxAttempts) {
+                        setTimeout(checkStatus, 500); // Check again in 500ms
+                    } else {
+                        alert("Waqti dheeraad ah ayaa loo baahan yahay. Fadlan mar kale isku day.");
+                        document.getElementById('pay-btn').style.display = 'block';
+                        document.getElementById('payment-loader').style.display = 'none';
+                    }
+                };
+
+                checkStatus();
+            } catch (e) {
+                console.error(e);
+                alert("Khalad ayaa dhacay. Fadlan mar kale isku day.");
+                document.getElementById('pay-btn').style.display = 'block';
+                document.getElementById('payment-loader').style.display = 'none';
             }
         }
 

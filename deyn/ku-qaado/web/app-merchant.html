@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="so">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ku Qaado - Merchant App</title>
+    <style>
+        :root {
+            --primary: #1E293B;
+            --bg: #F8FAFC;
+            --card: #FFFFFF;
+            --text: #020617;
+            --muted: #64748B;
+            --border: #E5E7EB;
+            --accent: #2563EB;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            padding-bottom: 80px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--primary);
+            color: white;
+            padding: 16px;
+            border-radius: 16px;
+        }
+
+        .stat-card.light {
+            background: white;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 22px;
+            background: #F1F5F9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .card-info {
+            flex: 1;
+        }
+
+        .card-name {
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .card-phone {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .card-right {
+            text-align: right;
+        }
+
+        .card-amount {
+            font-weight: 800;
+            font-size: 15px;
+        }
+
+        .nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid var(--border);
+            display: flex;
+            padding-bottom: 20px;
+        }
+
+        .nav-item {
+            flex: 1;
+            border: none;
+            background: none;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            opacity: 0.4;
+        }
+
+        .nav-item.active {
+            opacity: 1;
+        }
+
+        .nav-icon {
+            font-size: 20px;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .btn {
+            width: 100%;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: white;
+            border: 1px solid var(--border);
+            color: var(--primary);
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: flex-end;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            border-radius: 24px 24px 0 0;
+            padding: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 15px;
+        }
+
+        .badge {
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 99px;
+            background: #eee;
+        }
+
+        .badge.overdue {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        #screen-login {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 32px;
+            height: 100%;
+            align-items: center;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <!-- Screens will be injected here -->
+    </div>
+
+    <script>
+        const API = 'http://localhost:5173/api';
+        const SHOP_ID = 'shop_1';
+        let currentState = { screen: 'login', data: {} };
+
+        async function init() {
+            render();
+        }
+
+        function navigate(screen, data = {}) {
+            currentState = { screen, data };
+            render();
+        }
+
+        async function fetchDashboard() {
+            const res = await fetch(`${API}/shop/${SHOP_ID}/dashboard`);
+            return res.json();
+        }
+
+        async function fetchCustomers(search = '') {
+            const res = await fetch(`${API}/shop/${SHOP_ID}/customers?search=${search}`);
+            return res.json();
+        }
+
+        function money(n) { return '$' + Math.round(n * 100) / 100; }
+
+        async function render() {
+            const app = document.getElementById('app');
+            app.innerHTML = '';
+
+            if (currentState.screen === 'login') {
+                app.innerHTML = `
+                    <div id="screen-login">
+                        <div style="font-size: 48px; margin-bottom: 20px;">🏪</div>
+                        <h1 style="font-size: 32px; margin-bottom: 8px;">Ku Qaado</h1>
+                        <p style="color: var(--muted); margin-bottom: 40px;">Maamulkii deynta ee casriga ahaa.</p>
+                        <div class="input-group" style="width:100%">
+                            <label>Teleefankaaga</label>
+                            <input type="tel" value="+252 61 777 8899" id="login-phone">
+                        </div>
+                        <button class="btn btn-primary" onclick="navigate('dashboard')">Gali (Login)</button>
+                    </div>
+                `;
+            } else if (currentState.screen === 'dashboard') {
+                const stats = await fetchDashboard();
+                const customersRes = await fetchCustomers();
+
+                app.innerHTML = `
+                    <div class="header">
+                        <h1>Ku Qaado</h1>
+                        <div onclick="navigate('notifications')" style="cursor:pointer">🔔</div>
+                    </div>
+                    <div class="content">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <span class="stat-label">Deyn furan</span>
+                                <span class="stat-value">${money(stats.totalOutstanding)}</span>
+                            </div>
+                            <div class="stat-card light">
+                                <span class="stat-label">La bixiyay maanta</span>
+                                <span class="stat-value">${money(stats.paidToday)}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="section-title">
+                            <span>Macaamiisha</span>
+                            <button onclick="alert('Demo check: Customer List functionality active')" style="border:none;background:none;color:var(--accent);font-weight:700">+ Ku dar</button>
+                        </div>
+                        
+                        ${customersRes.customers.map(c => `
+                            <div class="card" onclick="navigate('customerDetail', {id: '${c.id}'})">
+                                <div class="avatar">${c.name[0]}</div>
+                                <div class="card-info">
+                                    <div class="card-name">${c.name}</div>
+                                    <div class="card-phone">${c.phone}</div>
+                                </div>
+                                <div class="card-right">
+                                    <div class="card-amount">${money(c.totalOpen)}</div>
+                                    <div class="badge ${c.hasOverdue ? 'overdue' : ''}">${c.hasOverdue ? 'Dhacday' : 'OK'}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                        
+                        <button class="btn btn-primary" style="margin-top: 20px" onclick="navigate('createDebt')">Deyn Cusub</button>
+                    </div>
+                    ${renderNav('dashboard')}
+                `;
+            } else if (currentState.screen === 'createDebt') {
+                app.innerHTML = `
+                    <div class="header">
+                        <button onclick="navigate('dashboard')" style="border:none;background:none;font-size:20px">←</button>
+                        <h1>Deyn Cusub</h1>
+                        <div></div>
+                    </div>
+                    <div class="content">
+                        <div class="input-group">
+                            <label>Macmiilka</label>
+                            <select id="debt-customer">
+                                <option value="cus_1">Cabdi Axmed</option>
+                                <option value="cus_2">Maxamed Ali</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Alaabta (JSON)</label>
+                            <textarea id="debt-items">[{"name":"Bariis","qty":2,"unitPrice":5}]</textarea>
+                        </div>
+                        <button class="btn btn-primary" onclick="handleCreateDebt()">Xaqiiji & Dir</button>
+                    </div>
+                `;
+            }
+        }
+
+        function renderNav(active) {
+            return `
+                <div class="nav">
+                    <button class="nav-item ${active === 'dashboard' ? 'active' : ''}" onclick="navigate('dashboard')">
+                        <span class="nav-icon">💰</span><span class="nav-label">Deyn</span>
+                    </button>
+                    <button class="nav-item ${active === 'payments' ? 'active' : ''}" onclick="navigate('payments')">
+                        <span class="nav-icon">🧾</span><span class="nav-label">Lacag</span>
+                    </button>
+                    <button class="nav-item ${active === 'customers' ? 'active' : ''}" onclick="navigate('customers')">
+                        <span class="nav-icon">👥</span><span class="nav-label">Macmiil</span>
+                    </button>
+                    <button class="nav-item ${active === 'settings' ? 'active' : ''}" onclick="navigate('settings')">
+                        <span class="nav-icon">⚙️</span><span class="nav-label">Asetin</span>
+                    </button>
+                </div>
+            `;
+        }
+
+        async function handleCreateDebt() {
+            const customerId = document.getElementById('debt-customer').value;
+            const items = JSON.parse(document.getElementById('debt-items').value);
+
+            const res = await fetch(`${API}/debts`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ shopId: SHOP_ID, customerId, items })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                alert('WhatsApp Link generated! Sent to Portal Simulator.');
+                window.parent.postMessage({ type: 'DEBT_CREATED', url: data.whatsappUrl }, '*');
+                navigate('dashboard');
+            } else {
+                alert('Khalad: ' + data.error);
+            }
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

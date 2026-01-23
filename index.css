@@ -406,6 +406,8 @@ body {
 
 .search-input::placeholder {
     color: var(--text-tertiary);
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--letter-spacing-tight);
 }
 
 .search-icon {
@@ -1615,8 +1617,10 @@ body {
 }
 
 .modal-title {
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    letter-spacing: var(--letter-spacing-tight);
 }
 
 .modal-body {

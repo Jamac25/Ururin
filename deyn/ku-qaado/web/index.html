@@ -1,12 +1,10 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="so">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ku Qaado - Maamul deynta ganacsigaaga</title>
-  <meta name="description"
-    content="Digitaalinen vihko luotoille. Hallitse asiakkaiden velkoja helposti WhatsApp-integraatiolla." />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ku Qaado - Gali</title>
   <style>
     * {
       margin: 0;
@@ -15,449 +13,322 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #fff;
-      color: #111827;
-      line-height: 1.6;
-    }
-
-    /* Hero */
-    .hero {
-      background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
-      color: white;
-      min-height: 90vh;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 40px 20px;
-      position: relative;
-      overflow: hidden;
+      color: white;
     }
 
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-      background-size: 50px 50px;
-      animation: drift 20s linear infinite;
+    .container {
+      width: 100%;
+      max-width: 420px;
+      padding: 24px;
     }
 
-    @keyframes drift {
-      0% {
-        transform: translate(0, 0)
-      }
-
-      100% {
-        transform: translate(50px, 50px)
-      }
-    }
-
-    .hero-content {
-      max-width: 1200px;
+    .logo-section {
       text-align: center;
-      position: relative;
-      z-index: 1;
+      margin-bottom: 48px;
     }
 
-    .logo-big {
-      width: 120px;
-      height: 120px;
-      background: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(10px);
-      border-radius: 30px;
-      display: grid;
-      place-items: center;
-      margin: 0 auto 24px;
-      font-size: 64px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-    }
-
-    h1 {
-      font-size: 56px;
-      font-weight: 900;
+    .logo {
+      font-size: 72px;
       margin-bottom: 16px;
-      letter-spacing: -0.03em;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .logo-text {
+      font-size: 32px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #38BDF8 0%, #818CF8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
     }
 
     .tagline {
-      font-size: 24px;
-      opacity: 0.95;
-      margin-bottom: 48px;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
+      color: #94A3B8;
+      font-size: 14px;
+      font-weight: 500;
     }
 
-    .cta-buttons {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      padding: 18px 36px;
-      border-radius: 16px;
-      font-weight: 800;
-      font-size: 18px;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      border: none;
-      transition: all 0.3s;
-    }
-
-    .btn-primary {
-      background: white;
-      color: #0d9488;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
-    }
-
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.15);
-      color: white;
-      border: 2px solid rgba(255, 255, 255, 0.3);
+    .card {
+      background: rgba(255, 255, 255, 0.05);
       backdrop-filter: blur(10px);
-    }
-
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.25);
-    }
-
-    /* Benefits */
-    .benefits {
-      max-width: 1200px;
-      margin: -80px auto 80px;
-      padding: 0 20px;
-      position: relative;
-      z-index: 2;
-    }
-
-    .benefit-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 24px;
-    }
-
-    .benefit-card {
-      background: white;
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 24px;
       padding: 32px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-      transition: all 0.3s;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     }
 
-    .benefit-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
-    }
-
-    .benefit-icon {
-      font-size: 48px;
-      margin-bottom: 16px;
-    }
-
-    .benefit-card h3 {
-      font-size: 22px;
-      font-weight: 800;
-      margin-bottom: 12px;
-      color: #1f2937;
-    }
-
-    .benefit-card p {
-      color: #6b7280;
-      line-height: 1.6;
-    }
-
-    /* How it works */
-    .how-it-works {
-      background: #f9fafb;
-      padding: 80px 20px;
-    }
-
-    .how-content {
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-
-    .section-title {
-      font-size: 42px;
-      font-weight: 900;
-      text-align: center;
-      margin-bottom: 16px;
-      color: #1f2937;
-    }
-
-    .section-subtitle {
-      text-align: center;
-      color: #6b7280;
-      font-size: 18px;
-      margin-bottom: 60px;
-    }
-
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 32px;
-    }
-
-    .step {
-      text-align: center;
-    }
-
-    .step-number {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
-      color: white;
-      display: grid;
-      place-items: center;
-      font-size: 28px;
-      font-weight: 900;
-      margin: 0 auto 16px;
-    }
-
-    .step h4 {
-      font-size: 20px;
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
-
-    .step p {
-      color: #6b7280;
-    }
-
-    /* Social proof */
-    .social-proof {
-      padding: 80px 20px;
-    }
-
-    .proof-content {
-      max-width: 1000px;
-      margin: 0 auto;
-      text-align: center;
-    }
-
-    .testimonial {
-      background: white;
-      border-radius: 24px;
-      padding: 32px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    .form-group {
       margin-bottom: 24px;
     }
 
-    .testimonial-text {
-      font-size: 18px;
-      font-style: italic;
-      color: #1f2937;
-      margin-bottom: 16px;
-    }
-
-    .testimonial-author {
-      font-weight: 700;
-      color: #0d9488;
-    }
-
-    /* Footer */
-    .footer {
-      background: #1f2937;
-      color: white;
-      padding: 60px 20px 40px;
-    }
-
-    .footer-content {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .footer-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 40px;
-      margin-bottom: 40px;
-    }
-
-    .footer-section h5 {
-      font-size: 16px;
-      font-weight: 800;
-      margin-bottom: 16px;
-    }
-
-    .footer-section a {
-      color: rgba(255, 255, 255, 0.8);
-      text-decoration: none;
+    label {
       display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #CBD5E1;
       margin-bottom: 8px;
-      transition: color 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
-    .footer-section a:hover {
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
       color: white;
+      font-size: 16px;
+      transition: all 0.3s ease;
     }
 
-    .footer-bottom {
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      padding-top: 20px;
+    input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.12);
+      border-color: #38BDF8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+    }
+
+    input::placeholder {
+      color: #64748B;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #38BDF8 0%, #818CF8 100%);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(56, 189, 248, 0.3);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .otp-section {
+      display: none;
+    }
+
+    .otp-section.active {
+      display: block;
+    }
+
+    .back-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: #CBD5E1;
+      margin-bottom: 16px;
+    }
+
+    .info-text {
       text-align: center;
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 14px;
+      color: #94A3B8;
+      font-size: 13px;
+      margin-top: 16px;
     }
 
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 40px;
-      }
+    .error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #FCA5A5;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
 
-      .tagline {
-        font-size: 18px;
-      }
+    .error.show {
+      display: block;
+    }
 
-      .btn {
-        padding: 14px 24px;
-        font-size: 16px;
-      }
+    .footer {
+      text-align: center;
+      margin-top: 32px;
+      color: #64748B;
+      font-size: 12px;
+    }
+
+    .footer a {
+      color: #38BDF8;
+      text-decoration: none;
     }
   </style>
 </head>
 
 <body>
-  <!-- Hero -->
-  <div class="hero">
-    <div class="hero-content">
-      <div class="logo-big">🏪</div>
-      <h1>Ku Qaado</h1>
-      <p class="tagline">Maamul deynta ganacsigaaga – Digitaalinen vihko luotoille</p>
-      <div class="cta-buttons">
-        <a href="/download.html" class="btn btn-primary">
-          <span>📱</span>
-          <span>Bilow isticmaalka</span>
-        </a>
-        <a href="/demo.html" class="btn btn-secondary">
-          <span>▶️</span>
-          <span>Eeg demo</span>
-        </a>
-      </div>
+  <div class="container">
+    <div class="logo-section">
+      <div class="logo">🏪</div>
+      <div class="logo-text">Ku Qaado</div>
+      <div class="tagline">Maamulka Deynta ee Casriga ah</div>
     </div>
-  </div>
 
-  <!-- Benefits -->
-  <div class="benefits">
-    <div class="benefit-grid">
-      <div class="benefit-card">
-        <div class="benefit-icon">💰</div>
-        <h3>Menetät vähemmän rahaa</h3>
-        <p>Automaattinen luottorajan valvonta estää liiallisen luotonannon. Näet heti erääntyneet velat.</p>
-      </div>
+    <div class="card">
+      <div id="error" class="error"></div>
 
-      <div class="benefit-card">
-        <div class="benefit-icon">⚡</div>
-        <h3>Asiakkaat maksavat nopeammin</h3>
-        <p>WhatsApp-muistutukset ja selkeä velkakirja motivoivat asiakkaita maksamaan ajallaan.</p>
-      </div>
-
-      <div class="benefit-card">
-        <div class="benefit-icon">🤝</div>
-        <h3>Riidat vähenevät</h3>
-        <p>Asiakas hyväksyy jokaisen velan digitaalisesti. Kaikki on läpinäkyvää ja dokumentoitua.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- How it works -->
-  <div class="how-it-works">
-    <div class="how-content">
-      <h2 class="section-title">Sidee u shaqeyso</h2>
-      <p class="section-subtitle">3 yksinkertaista askelta</p>
-
-      <div class="steps">
-        <div class="step">
-          <div class="step-number">1</div>
-          <h4>👥 Ku dar macmiil</h4>
-          <p>Lisää asiakas nimellä, puhelinnumerolla ja luottorajalla</p>
+      <!-- Phone Input Section -->
+      <div id="phone-section">
+        <div class="form-group">
+          <label>Lambarka Taleefanka</label>
+          <input type="tel" id="phone" placeholder="+252 61 900 0000" value="+252619000111">
         </div>
-
-        <div class="step">
-          <div class="step-number">2</div>
-          <h4>💰 Ku dar deyn</h4>
-          <p>Luo velka tuotteineen ja eräpäivällä. Summa lasketaan automaattisesti.</p>
+        <button class="btn" onclick="sendOTP()">Dir Koodhka</button>
+        <div class="info-text">
+          Koodh ayaa loo soo diri doonaa taleefankaaga
         </div>
+      </div>
 
-        <div class="step">
-          <div class="step-number">3</div>
-          <h4>📱 Dir link WhatsApp</h4>
-          <p>Lähetä asiakkaalle linkki. Asiakas hyväksyy yhdellä klikkauksella.</p>
+      <!-- OTP Input Section -->
+      <div id="otp-section" class="otp-section">
+        <button class="btn back-btn" onclick="backToPhone()">← Dib u noqo</button>
+        <div class="form-group">
+          <label>Geli Koodhka</label>
+          <input type="text" id="otp" placeholder="123456" maxlength="6">
+        </div>
+        <button class="btn" onclick="verifyOTP()">Xaqiiji</button>
+        <div class="info-text">
+          Koodhka waxaa lagu soo diray <span id="phone-display"></span>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Social Proof -->
-  <div class="social-proof">
-    <div class="proof-content">
-      <h2 class="section-title">Kauppiaat rakastavat Ku Qaado</h2>
-      <p class="section-subtitle">Pilottikauppojen kokemuksia</p>
-
-      <div class="testimonial">
-        <p class="testimonial-text">"Ennen menetin paljon rahaa kun en muistanut kuka oli velkaa. Nyt kaikki on tallessa
-          ja asiakkaat maksavat ajallaan."</p>
-        <p class="testimonial-author">— Axmed, Hargeisa</p>
-      </div>
-
-      <div class="testimonial">
-        <p class="testimonial-text">"Asiakkaat arvostavat läpinäkyvyyttä. He näkevät tarkalleen mitä ovat ostaneet ja
-          voivat hyväksyä sen. Ei enää riitoja!"</p>
-        <p class="testimonial-author">— Fadumo, Berbera</p>
-      </div>
+    <div class="footer">
+      © 2024 Ku Qaado • <a href="mailto:support@kuqaado.com">Taageero</a>
     </div>
   </div>
 
-  <!-- Footer -->
-  <div class="footer">
-    <div class="footer-content">
-      <div class="footer-grid">
-        <div class="footer-section">
-          <h5>Tuote</h5>
-          <a href="/demo.html">Demo</a>
-          <a href="/pricing.html">Hinnoittelu</a>
-          <a href="/download.html">Lataa</a>
-        </div>
+  <script>
+    const API = 'http://localhost:5173/api';
+    let currentPhone = '';
 
-        <div class="footer-section">
-          <h5>Tuki</h5>
-          <a href="/faq.html">UKK</a>
-          <a href="/contact.html">Ota yhteyttä</a>
-        </div>
+    async function sendOTP() {
+      const phone = document.getElementById('phone').value.trim();
 
-        <div class="footer-section">
-          <h5>Yritys</h5>
-          <a href="/terms.html">Käyttöehdot</a>
-          <a href="/privacy.html">Tietosuoja</a>
-        </div>
+      if (!phone || phone.length < 10) {
+        showError('Fadlan geli lambarka saxda ah');
+        return;
+      }
 
-        <div class="footer-section">
-          <h5>Ku Qaado</h5>
-          <p style="color:rgba(255,255,255,0.8); font-size:14px;">Digitaalinen vihko luotoille somaliankielisille
-            kauppiaille.</p>
-        </div>
-      </div>
+      try {
+        const res = await fetch(`${API}/auth/send-otp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone })
+        });
 
-      <div class="footer-bottom">
-        <p>© 2024 Ku Qaado. Made with ❤️ for Somali-speaking merchants.</p>
-      </div>
-    </div>
-  </div>
+        const data = await res.json();
+
+        if (res.ok) {
+          currentPhone = phone;
+          document.getElementById('phone-display').textContent = phone;
+          document.getElementById('phone-section').style.display = 'none';
+          document.getElementById('otp-section').classList.add('active');
+          hideError();
+        } else {
+          showError(data.error === 'INVALID_PHONE' ? 'Lambarka ma saxna' : 'Khalad ayaa dhacay');
+        }
+      } catch (e) {
+        showError('Xidhiidhka ayaa go\'ay');
+      }
+    }
+
+    async function verifyOTP() {
+      const otp = document.getElementById('otp').value.trim();
+
+      if (!otp || otp.length !== 6) {
+        showError('Fadlan geli koodhka 6 lambar ah');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API}/auth/verify-otp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: currentPhone, otp })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          // Store token and redirect to dashboard
+          localStorage.setItem('ku_qaado_token', data.token);
+          localStorage.setItem('ku_qaado_shop_id', data.shopId);
+          window.location.href = 'app-merchant.html';
+        } else {
+          const msgs = {
+            INVALID_OTP: 'Koodhkaagu waa khalad',
+            OTP_EXPIRED: 'Koodhku waa dhacay, fadlan mar kale dir',
+            NO_SESSION: 'Fadlan mar kale codso koodh cusub'
+          };
+          showError(msgs[data.error] || 'Khalad ayaa dhacay');
+        }
+      } catch (e) {
+        showError('Xidhiidhka ayaa go\'ay');
+      }
+    }
+
+    function backToPhone() {
+      document.getElementById('phone-section').style.display = 'block';
+      document.getElementById('otp-section').classList.remove('active');
+      document.getElementById('otp').value = '';
+      hideError();
+    }
+
+    function showError(msg) {
+      const errorEl = document.getElementById('error');
+      errorEl.textContent = msg;
+      errorEl.classList.add('show');
+    }
+
+    function hideError() {
+      document.getElementById('error').classList.remove('show');
+    }
+
+    // Allow Enter key to submit
+    document.getElementById('phone').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendOTP();
+    });
+
+    document.getElementById('otp').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') verifyOTP();
+    });
+  </script>
 </body>
 
 </html>

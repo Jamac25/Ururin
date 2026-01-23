@@ -25,6 +25,15 @@
       "creditLimit": 30,
       "avatar": null,
       "createdAt": "2026-01-07T18:22:04.809Z"
+    },
+    {
+      "id": "cus_Xg7Y8aaW",
+      "shopId": "shop_1",
+      "name": "Faadumo Hassan",
+      "phone": "+252619000333",
+      "creditLimit": 100,
+      "avatar": null,
+      "createdAt": "2026-01-23T21:11:41.226Z"
     }
   ],
   "debts": [
@@ -57,12 +66,53 @@
       "customerId": "cus_1",
       "createdAt": "2024-04-11T10:00:00.000Z",
       "dueAt": "2024-04-15T10:00:00.000Z",
-      "status": "OVERDUE",
+      "status": "PAID",
       "items": [
         {
           "name": "Bariis",
           "qty": 3,
           "unitPrice": 3.67
+        }
+      ],
+      "approvedAt": null,
+      "paidAt": "2026-01-23T20:58:45.095Z",
+      "totalPaid": 11.01
+    },
+    {
+      "id": "debt_q_-N0slHas",
+      "shopId": "shop_1",
+      "customerId": "cus_2",
+      "createdAt": "2026-01-23T20:58:20.857Z",
+      "dueAt": "2026-02-22T20:58:20.857Z",
+      "status": "PENDING_ACCEPT",
+      "items": [
+        {
+          "name": "Bariis",
+          "qty": 2,
+          "unitPrice": 5
+        }
+      ],
+      "approvedAt": null,
+      "paidAt": null,
+      "totalPaid": 0
+    },
+    {
+      "id": "debt_ux5-e4oduI",
+      "shopId": "shop_1",
+      "customerId": "cus_Xg7Y8aaW",
+      "createdAt": "2026-01-23T21:11:59.349Z",
+      "dueAt": "2026-02-15T00:00:00.000Z",
+      "status": "PENDING_ACCEPT",
+      "items": [
+        {
+          "name": "Bariis",
+          "qty": 2,
+          "unitPrice": 5
+        },
+        {
+          "name": "Hilib",
+          "qty": 1,
+          "unitPrice": 10
         }
       ],
       "approvedAt": null,
@@ -78,7 +128,53 @@
       "amount": 14,
       "note": "Full payment",
       "createdAt": "2026-01-07T18:28:16.611Z"
+    },
+    {
+      "id": "pay_XDN9JVgJ42",
+      "debtId": "debt_2",
+      "customerId": "cus_1",
+      "amount": 11.01,
+      "note": "ZAAD payment - txn_sWS5_kwnHlri",
+      "createdAt": "2026-01-23T20:58:45.095Z"
     }
   ],
-  "users": []
+  "users": [],
+  "paymentTransactions": [
+    {
+      "id": "txn_sWS5_kwnHlri",
+      "debtId": "debt_2",
+      "customerId": "cus_1",
+      "amount": 11.01,
+      "method": "zaad",
+      "customerPhone": "+252619000111",
+      "status": "COMPLETED",
+      "createdAt": "2026-01-23T20:58:42.093Z",
+      "completedAt": "2026-01-23T20:58:45.094Z",
+      "failureReason": null
+    },
+    {
+      "id": "txn_M6MGuhOwDnvT",
+      "debtId": "debt_2",
+      "customerId": "cus_1",
+      "amount": 11.01,
+      "method": "zaad",
+      "customerPhone": "+252619000111",
+      "status": "COMPLETED",
+      "createdAt": "2026-01-23T21:00:18.508Z",
+      "completedAt": "2026-01-23T21:00:21.511Z",
+      "failureReason": null
+    },
+    {
+      "id": "txn_sKHnKUuRsK73",
+      "debtId": "debt_2",
+      "customerId": "cus_1",
+      "amount": 11.01,
+      "method": "zaad",
+      "customerPhone": "+252619000111",
+      "status": "COMPLETED",
+      "createdAt": "2026-01-23T21:15:46.722Z",
+      "completedAt": "2026-01-23T21:15:49.726Z",
+      "failureReason": null
+    }
+  ]
 }

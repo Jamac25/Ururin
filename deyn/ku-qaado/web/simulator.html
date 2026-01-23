@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="so">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ku Qaado - Full App Simulator</title>
+    <style>
+        body {
+            margin: 0;
+            background: #0F172A;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            padding: 12px 24px;
+            background: #1E293B;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-bar h1 {
+            margin: 0;
+            font-size: 18px;
+            color: #38BDF8;
+        }
+
+        .sim-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 60px;
+            padding: 20px;
+        }
+
+        .phone-frame {
+            width: 375px;
+            height: 750px;
+            background: black;
+            border-radius: 40px;
+            border: 8px solid #334155;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+        }
+
+        .phone-label {
+            position: absolute;
+            top: -30px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: #94A3B8;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+
+        .instructions {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(30, 41, 59, 0.9);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            font-size: 14px;
+            display: flex;
+            gap: 40px;
+        }
+
+        .instruction-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .num {
+            background: #38BDF8;
+            color: #0F172A;
+            width: 24px;
+            height: 24px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top-bar">
+        <h1>Ku Qaado Simulator 🤖</h1>
+        <div>MVP v1.0 - Full Flow</div>
+    </div>
+
+    <div class="sim-container">
+        <!-- Left: Merchant App -->
+        <div style="position: relative">
+            <div class="phone-label">App-ka Kauppiaha (Merchant)</div>
+            <div class="phone-frame">
+                <iframe src="app-merchant.html" id="merchant-frame"></iframe>
+            </div>
+        </div>
+
+        <!-- Right: Customer Portal -->
+        <div style="position: relative">
+            <div class="phone-label">Portal-ka Macmiilka (Customer)</div>
+            <div class="phone-frame">
+                <iframe src="profile.html?customer=cus_1" id="customer-frame"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="instructions">
+        <div class="instruction-step"><span class="num">1</span> <span>Ku dar deyn cusub App-ka bidixda ah.</span></div>
+        <div class="instruction-step"><span class="num">2</span> <span>Portalku (midigta) wuu is
+                cusboonaysiinayaa.</span></div>
+        <div class="instruction-step"><span class="num">3</span> <span>Ku xaqiiji OTP-ka (123456) portal-ka
+                midigta.</span></div>
+        <div class="instruction-step"><span class="num">4</span> <span>Eeg sida status-ku ugu beddelanayo "ACCEPTED"
+                App-ka bidixda.</span></div>
+    </div>
+
+    <script>
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'DEBT_CREATED') {
+                console.log('Syncing simulator panes...');
+                const customerFrame = document.getElementById('customer-frame');
+                customerFrame.src = event.data.url; // url will be profile.html?customer=...
+            }
+        });
+
+        // Auto-refresh merchant frame every 10s for demo purposes to show status changes
+        setInterval(() => {
+            const merchantFrame = document.getElementById('merchant-frame');
+            // Only reload if we are on dashboard (simulated check)
+            if (merchantFrame.contentWindow.currentState && merchantFrame.contentWindow.currentState.screen === 'dashboard') {
+                merchantFrame.contentWindow.render();
+            }
+        }, 5000);
+    </script>
+</body>
+
+</html>

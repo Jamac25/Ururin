@@ -278,12 +278,16 @@ const App = {
 
         // Listen for auth state changes
         Auth.onAuthChange((user, profile) => {
-            if (!user) {
-                // User logged out, redirect to login
+            const hash = window.location.hash;
+            const publicRoutes = ['/join', '/confirm-payment', '/payment-success', '/login', '/register'];
+            const isPublicRoute = publicRoutes.some(route => hash.includes(route));
+
+            if (!user && !isPublicRoute) {
+                // User logged out and not on a public route, redirect to login
                 window.location.hash = '#/login';
                 this.handleRoute(); // Ensure login page renders
             } else {
-                // User logged in, reload current view
+                // User logged in or on a public route, reload current view
                 this.handleRoute();
             }
         });
@@ -3082,7 +3086,7 @@ const App = {
             </div>
 
             <div class="section-header" style="margin-top: var(--spacing-xl);">
-                <h3 class="section-title">📊 Yksityiskohtainen Lista</h3>
+                <h3 class="section-title">📊 Liiska Faahfaahsan</h3>
             </div>
             <div class="card" style="cursor: default;">
                 <div class="message-preview-text" style="font-size: var(--font-size-sm); white-space: pre-wrap; max-height: 200px; overflow-y: auto;">${WhatsApp.generateDetailedList(campaignId)}</div>
@@ -3161,7 +3165,7 @@ const App = {
 
         return `
             <div style="margin-bottom: var(--spacing-lg);">
-                <div style="font-size: 1.5rem; margin-bottom: var(--spacing-xs);">${campaign.emoji} Taariikhda Outit-ka</div>
+                <div style="font-size: 1.5rem; margin-bottom: var(--spacing-xs);">${campaign.emoji} Taariikhda Kormeerka</div>
                 <div style="color: var(--text-secondary); font-size: var(--font-size-sm);">${logs.length} dhacdo</div>
             </div>
             
