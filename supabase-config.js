@@ -13,12 +13,6 @@ export const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiO
 if (typeof window !== 'undefined') {
    window.SUPABASE_URL = SUPABASE_URL;
    window.SUPABASE_ANON_KEY = SUPABASE_ANON_KEY;
-
-   // Log configuration status (development only)
-   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      console.log('🔧 Supabase Config loaded:', {
-         url: SUPABASE_URL,
-         keyConfigured: !!SUPABASE_ANON_KEY
-      });
-   }
 }
+
+export const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);

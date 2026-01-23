@@ -3,10 +3,10 @@
    Handles user registration, login, logout
    ======================================== */
 
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase-config.js';
+import { supabase } from './supabase-config.js';
 
 // Initialize Supabase client
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); // Removed: using shared instance
 
 const Auth = {
     currentUser: null,

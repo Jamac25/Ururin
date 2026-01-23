@@ -104,9 +104,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module">
-        import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase-config.js';
+        import { supabase, SUPABASE_URL } from './supabase-config.js';
 
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); // Removed
         window.supabaseClient = supabase;
 
         window.testConnection = async function () {
