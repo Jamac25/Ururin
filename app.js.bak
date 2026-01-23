@@ -441,7 +441,7 @@ const App = {
                 mainContent.style.opacity = '0';
                 mainContent.style.transform = 'translateY(10px)';
 
-                setTimeout(async () => {
+                setTimeout(() => {
                     try {
                         // Toggle public modes
                         const publicRoutes = ['/join', '/join-success', '/confirm-payment'];
@@ -455,31 +455,23 @@ const App = {
                         if (protectedRoutes.includes(route) && params.id) {
                             let campaignId = params.id;
                             if (route === '/edit-contributor') {
-                                const contributor = await DataLayer.getContributor(params.id);
+                                const contributor = DB.getContributor(params.id);
                                 if (contributor) campaignId = contributor.campaignId;
                             }
-                            // Optimization: Check if we have data access (local or remote)
-                            const isAuthenticated = Auth.isAuthenticated();
-                            const hasLocalData = DataLayer.hasLocalData && DataLayer.hasLocalData();
-
-                            // If neither authenticated nor has local data (legacy), redirect
-                            // Note: We might need a better check here depending on strictness
-                            // For now, simpler check
+                            if (!this.sessions[campaignId]) {
+                                route = '/auth';
+                                params.id = campaignId;
+                            }
                         }
 
-                        // Show loading state if needed
-                        mainContent.innerHTML = '<div class="loading-state"><div class="spinner"></div></div>';
-
-                        const viewContent = await this.renderView(route, params);
-                        mainContent.innerHTML = viewContent;
+                        mainContent.innerHTML = this.renderView(route, params);
                         window.scrollTo(0, 0);
 
                         mainContent.style.opacity = '1';
                         mainContent.style.transform = 'translateY(0)';
                     } catch (e) {
                         console.error('Render error:', e);
-                        Components.toast('Khalad ayaa dhacay: ' + e.message, 'error');
-                        mainContent.innerHTML = `<div class="p-xl text-center"><h3>Khalad ayaa dhacay</h3><p class="text-secondary mb-md">${e.message}</p><button onclick="location.hash='/'" class="btn btn-primary mt-md">Back to Home</button></div>`;
+                        mainContent.innerHTML = `<div class="p-xl text-center"><h3>Khalad ayaa dhacay</h3><button onclick="location.hash='/'" class="btn btn-primary mt-md">Back to Home</button></div>`;
                         mainContent.style.opacity = '1';
                         mainContent.style.transform = 'translateY(0)';
                     }
@@ -491,7 +483,7 @@ const App = {
         }
     },
 
-    async renderView(route, params) {
+    renderView(route, params) {
         const routes = {
             '/': () => this.viewHome(),
             '/campaigns': () => this.viewCampaigns(),
@@ -524,7 +516,7 @@ const App = {
         };
 
         const viewFn = routes[route];
-        return viewFn ? await viewFn() : this.view404();
+        return viewFn ? viewFn() : this.view404();
     },
 
     navigate(path) {
@@ -636,8 +628,8 @@ const App = {
     // HOME DASHBOARD
     // ========================================
 
-    async viewHome() {
-        const campaigns = await DataLayer.getCampaigns();
+    viewHome() {
+        const campaigns = DB.getCampaigns();
 
         // Redirect to welcome page if no campaigns exist
         if (!campaigns.length) {
@@ -648,35 +640,18 @@ const App = {
         // Sort by most recently updated
         campaigns.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
-        // Get totals and stats in parallel
+        // Get totals
         let totalCollected = 0;
         let totalGoal = 0;
         let totalContributors = 0;
-
-        const campaignsWithStats = await Promise.all(campaigns.map(async c => {
-            const stats = await DataLayer.getCampaignStats(c.id);
+        campaigns.forEach(c => {
+            const stats = DB.getCampaignStats(c.id);
             totalCollected += stats.collected;
             totalGoal += c.goal;
             totalContributors += stats.total;
-            return { ...c, stats }; // Attach stats to campaign object
-        }));
+        });
 
-        const settings = DataLayer.getSettings(); // Sync
-        const pendingPayments = await DataLayer.getPendingPayments();
-        const automationBadgesObj = await this.renderHomeAutomationBadges(campaigns);
-
-        // Pre-render campaign cards
-        // Note: Components.campaignCard might be synchronous, assuming it takes the campaign object (which now has stats?)
-        // Actually Components.campaignCard likely calls DB.getCampaignStats internally? 
-        // Let's check Components.campaignCard later. For now assume it might need refactor or we pass stats.
-        // If Components.campaignCard calls DB, it will fail/return empty. 
-        // FIX: We need to check Components.campaignCard. 
-        // For this step, I will assume I need to fetch stats inside ViewHome and maybe update CampaignCard to accept stats?
-        // Or if Components.campaignCard uses DB.getCampaignStats, and that redirects to DataLayer (which is async), it will return a Promise.
-        // So Components.campaignCard MUST be updated or we need to await it. 
-
-        // Let's await the badge string
-        const automationBadges = automationBadgesObj;
+        const settings = DB.getSettings();
 
         return `
             <div style="background: var(--gradient-hero-mesh); border-radius: 24px; padding: 48px 24px; margin-bottom: 32px; position: relative; overflow: hidden; box-shadow: var(--shadow-hero), var(--glow-hero);">
@@ -712,41 +687,38 @@ const App = {
                 </button>
             </div>
             
-            <div id="home-campaign-list">
-               ${(await Promise.all(campaigns.slice(0, 5).map(async c => await Components.campaignCard(c)))).join('')}
-            </div>
+            ${campaigns.slice(0, 5).map(c => Components.campaignCard(c)).join('')}
             
-            ${pendingPayments.length ? `
+            ${DB.getPendingPayments().length ? `
                 <div class="card cursor-pointer border-l-warning" onclick="App.navigate('/pending-payments')">
                     <div class="flex items-center gap-md">
                         <div class="emoji-lg">🟡</div>
                         <div class="flex-1">
                             <div class="card-title">Ilmo Bixin Sugaya</div>
-                            <div class="card-subtitle">${pendingPayments.length} sugaya dib u eegid</div>
+                            <div class="card-subtitle">${DB.getPendingPayments().length} sugaya dib u eegid</div>
                         </div>
                         <div class="text-tertiary">→</div>
                     </div>
                 </div>
             ` : ''}
             
-            ${automationBadges}
+            ${this.renderHomeAutomationBadges(campaigns)}
         `;
     },
 
-    async renderHomeAutomationBadges(campaigns) {
+    renderHomeAutomationBadges(campaigns) {
         let totalActions = 0;
         let reminderCount = 0;
         let updateCount = 0;
 
-        // Process sequentially or parallel
-        for (const c of campaigns) {
-            const actions = await DataLayer.getSuggestedActions(c.id);
+        campaigns.forEach(c => {
+            const actions = DB.getSuggestedActions(c.id);
             actions.forEach(a => {
                 totalActions++;
                 if (a.type === 'reminder_ready') reminderCount++;
                 if (a.type === 'update_ready') updateCount++;
             });
-        }
+        });
 
         if (totalActions === 0) return '';
 
@@ -767,8 +739,8 @@ const App = {
         `;
     },
 
-    async viewCampaigns() {
-        const campaigns = await DataLayer.getCampaigns();
+    viewCampaigns() {
+        const campaigns = DB.getCampaigns();
 
         if (!campaigns.length) {
             return Components.emptyState(
@@ -783,30 +755,22 @@ const App = {
         // Sort by most recently updated
         campaigns.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
-        // Note: passing stats explicitly would be better, but lazy loading works too since campaignCard handles it
-        const cardHtmls = await Promise.all(campaigns.map(c => Components.campaignCard(c)));
-
         return `
             <div class="section-header">
                 <h2 class="section-title">Dhammaan Ololaha</h2>
                 <span style="font-size: var(--font-size-sm); color: var(--text-tertiary);">${campaigns.length}</span>
             </div>
-            ${cardHtmls.join('')}
+            ${campaigns.map(c => Components.campaignCard(c)).join('')}
         `;
     },
 
-    async viewCampaignDetail(id) {
-        const campaign = await DataLayer.getCampaign(id);
+    viewCampaignDetail(id) {
+        const campaign = DB.getCampaign(id);
         if (!campaign) return this.view404();
 
-        const stats = await DataLayer.getCampaignStats(id);
-        const settings = DataLayer.getSettings();
-        const contributors = await DataLayer.getContributors(id);
-        const recentContributors = contributors.slice(0, 3);
-
-        // Ensure renderSuggestedActions is awaited if it becomes async (it uses getSuggestedActions which is async)
-        // I need to check renderSuggestedActions implementation. Assuming I need to update it too.
-        const suggestedActionsHtml = await this.renderSuggestedActions(id);
+        const stats = DB.getCampaignStats(id);
+        const settings = DB.getSettings();
+        const recentContributors = DB.getContributors(id).slice(0, 3);
 
         return `
             <div class="text-center mb-xl">
@@ -837,7 +801,7 @@ const App = {
                 </div>
             </div>
             
-            ${suggestedActionsHtml}
+            ${this.renderSuggestedActions(id)}
             
             <div class="stats-grid">
                 <div class="stat-item" style="border-left: 3px solid var(--color-success);">
@@ -1016,12 +980,12 @@ const App = {
         `;
     },
 
-    async viewCampaignContributors(campaignId) {
-        const campaign = await DataLayer.getCampaign(campaignId);
+    viewCampaignContributors(campaignId) {
+        const campaign = DB.getCampaign(campaignId);
         if (!campaign) return this.view404();
 
-        const stats = await DataLayer.getCampaignStats(campaignId);
-        let contributors = await DataLayer.getContributors(campaignId);
+        const stats = DB.getCampaignStats(campaignId);
+        let contributors = DB.getContributors(campaignId);
 
         // Apply filter
         if (this.activeFilter === 'paid') {
@@ -1047,7 +1011,7 @@ const App = {
 
         return `
             <div style="margin-bottom: var(--spacing-lg);">
-                <div style="font-size: 1.5rem; margin-bottom: var(--spacing-xs);">${campaign.emoji || '📂'} ${campaign.name}</div>
+                <div style="font-size: 1.5rem; margin-bottom: var(--spacing-xs);">${campaign.emoji} ${campaign.name}</div>
                 <div style="color: var(--text-secondary); font-size: var(--font-size-sm);">${stats.total} tabaruce</div>
             </div>
             
@@ -1055,7 +1019,7 @@ const App = {
             ${Components.filterTabs(filters, this.activeFilter, 'App.setFilter')}
             
             ${contributors.length ?
-                contributors.map(c => Components.contributorRow(c, false, campaign)).join('') :
+                contributors.map(c => Components.contributorRow(c)).join('') :
                 `<div class="empty-state" style="padding: var(--spacing-xl);">
                     <div style="font-size: 48px; margin-bottom: var(--spacing-md);">👥</div>
                     <div style="color: var(--text-secondary);">Ma jiro tabaruce ${this.activeFilter !== 'all' ? 'la helay' : ''}</div>
@@ -1149,12 +1113,12 @@ const App = {
         `;
     },
 
-    async viewContributorDetail(id) {
-        const contributor = await DataLayer.getContributor(id);
+    viewContributorDetail(id) {
+        const contributor = DB.getContributor(id);
         if (!contributor) return this.view404();
 
-        const campaign = await DataLayer.getCampaign(contributor.campaignId);
-        const settings = DataLayer.getSettings();
+        const campaign = DB.getCampaign(contributor.campaignId);
+        const settings = DB.getSettings();
         const initials = contributor.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
         const statusOptions = [
@@ -1172,7 +1136,7 @@ const App = {
                 </div>
                 <h1 style="font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-xs);">${contributor.name}</h1>
                 <p style="color: var(--text-tertiary); font-family: monospace;">+${contributor.phone}</p>
-                ${campaign ? `<p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-top: var(--spacing-sm);">${campaign.emoji || '📂'} ${campaign.name}</p>` : ''}
+                ${campaign ? `<p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-top: var(--spacing-sm);">${campaign.emoji} ${campaign.name}</p>` : ''}
             </div>
             
             <div class="card" style="cursor: default;">
@@ -1226,8 +1190,8 @@ const App = {
         `;
     },
 
-    async viewAllContributors() {
-        let contributors = await DataLayer.getContributors();
+    viewAllContributors() {
+        let contributors = DB.getContributors();
 
         if (!contributors.length) {
             return Components.emptyState(
@@ -1238,9 +1202,6 @@ const App = {
                 '/add'
             );
         }
-
-        const campaigns = await DataLayer.getCampaigns();
-        const campaignMap = new Map(campaigns.map(c => [c.id, c]));
 
         // Calculate stats for filters
         const allContributors = [...contributors];
@@ -1282,7 +1243,7 @@ const App = {
             ${Components.filterTabs(filters, this.activeFilter, 'App.setFilter')}
             
             ${contributors.length ?
-                contributors.map(c => Components.contributorRow(c, true, campaignMap.get(c.campaignId))).join('') :
+                contributors.map(c => Components.contributorRow(c, true)).join('') :
                 `<div class="empty-state" style="padding: var(--spacing-xl);">
                     <div style="font-size: 48px; margin-bottom: var(--spacing-md);">${Icons.render('users', 'icon icon-xl icon-primary')}</div>
                     <div style="color: var(--text-secondary);">Ma jiro tabaruce ${this.activeFilter !== 'all' ? 'la helay' : ''}</div>
@@ -1291,12 +1252,12 @@ const App = {
         `;
     },
 
-    async viewSendMessages(campaignId) {
-        const campaign = await DataLayer.getCampaign(campaignId);
+    viewSendMessages(campaignId) {
+        const campaign = DB.getCampaign(campaignId);
         if (!campaign) return this.view404();
 
-        const stats = await DataLayer.getCampaignStats(campaignId);
-        const templates = DataLayer.getTemplates();
+        const stats = DB.getCampaignStats(campaignId);
+        const templates = DB.getTemplates();
 
         return `
             <div class="text-center mb-xl">
@@ -1353,8 +1314,8 @@ const App = {
         `;
     },
 
-    async viewTemplates() {
-        const templates = DataLayer.getTemplates();
+    viewTemplates() {
+        const templates = DB.getTemplates();
 
         return `
             <div class="text-center mb-xl">
@@ -1380,11 +1341,20 @@ const App = {
         `;
     },
 
-    async viewStats() {
-        const campaigns = await DataLayer.getCampaigns();
-        const allContributors = await DataLayer.getContributors();
-        const settings = DataLayer.getSettings();
-        const recentActivity = await DataLayer.getRecentActivity(8);
+    viewStats() {
+        const campaigns = DB.getCampaigns();
+        const allContributors = DB.getContributors();
+        const settings = DB.getSettings();
+
+        // Get analytics data
+        const performance = DB.getCampaignPerformance();
+        const topCampaigns = DB.getTopCampaigns(3);
+        const topContributors = DB.getTopContributors(5);
+        const statusBreakdown = DB.getStatusBreakdown();
+        const timeline = DB.getCollectionTimeline(null, 14); // Last 14 days
+        const collectionRate = DB.getCollectionRate();
+        const successMetrics = DB.getSuccessMetrics();
+        const recentActivity = DB.getRecentActivity(8);
 
         // Calculate totals
         let totalCollected = 0;
@@ -1392,91 +1362,18 @@ const App = {
         let totalPaid = 0;
         let totalPending = 0;
 
-        // Parallel fetch of stats for each campaign
-        const campaignsWithStats = await Promise.all(campaigns.map(async c => {
-            const stats = await DataLayer.getCampaignStats(c.id);
-            return { ...c, stats };
-        }));
-
-        campaignsWithStats.forEach(c => {
-            totalCollected += c.stats.collected;
+        campaigns.forEach(c => {
+            const stats = DB.getCampaignStats(c.id);
+            totalCollected += stats.collected;
             totalGoal += c.goal;
-            totalPaid += c.stats.paidCount;
-            totalPending += c.stats.pendingCount;
+            totalPaid += stats.paidCount;
+            totalPending += stats.pendingCount;
         });
 
         const overallPercent = totalGoal > 0 ? Math.round((totalCollected / totalGoal) * 100) : 0;
 
-        // Calculate Top Campaigns
-        const topCampaigns = [...campaignsWithStats]
-            .sort((a, b) => b.stats.collected - a.stats.collected)
-            .slice(0, 3)
-            .map(c => ({
-                id: c.id,
-                name: c.name,
-                percent: c.stats.percent,
-                collected: c.stats.collected
-            }));
-
-        // Calculate Top Contributors
-        const contributorMap = {};
-        allContributors.forEach(c => {
-            if (c.status === 'paid') {
-                const amount = parseFloat(c.amount) || 0;
-                const key = c.phone || c.name; // Use phone or name as unique key
-                if (!contributorMap[key]) {
-                    contributorMap[key] = { name: c.name, totalAmount: 0, campaignCount: 0 };
-                }
-                contributorMap[key].totalAmount += amount;
-                contributorMap[key].campaignCount++;
-            }
-        });
-
-        const topContributors = Object.values(contributorMap)
-            .sort((a, b) => b.totalAmount - a.totalAmount)
-            .slice(0, 5);
-
-        // Stats for Chart (last 14 days)
-        const today = new Date();
-        const timeline = [];
-        for (let i = 13; i >= 0; i--) {
-            const date = new Date(today);
-            date.setDate(today.getDate() - i);
-            const dateStr = date.toISOString().split('T')[0];
-
-            // Sum payments for this day (based on updatedAt of paid contributors)
-            const dailyTotal = allContributors
-                .filter(c => c.status === 'paid' && c.updatedAt && c.updatedAt.startsWith(dateStr))
-                .reduce((sum, c) => sum + (parseFloat(c.amount) || 0), 0);
-
-            timeline.push({ date: date.toLocaleDateString('so-SO', { day: 'numeric', month: 'short' }), amount: dailyTotal });
-        }
-
-        // Status Breakdown
-        const statusBreakdown = {
-            paid: {
-                count: allContributors.filter(c => c.status === 'paid').length,
-                amount: allContributors.filter(c => c.status === 'paid').reduce((sum, c) => sum + (parseFloat(c.amount) || 0), 0)
-            },
-            pending: {
-                count: allContributors.filter(c => c.status === 'pending').length,
-                amount: allContributors.filter(c => c.status === 'pending').reduce((sum, c) => sum + (parseFloat(c.amount) || 0), 0)
-            },
-            declined: {
-                count: allContributors.filter(c => c.status === 'declined').length,
-                amount: allContributors.filter(c => c.status === 'declined').reduce((sum, c) => sum + (parseFloat(c.amount) || 0), 0)
-            }
-        };
-
-        // Calculate success metrics
-        const successRate = allContributors.length ? Math.round((allContributors.filter(c => c.status === 'paid').length / allContributors.length) * 100) : 0;
-
-        // Collection rate (avg per day over last 7 days)
-        const last7DaysTotal = timeline.slice(7).reduce((sum, d) => sum + d.amount, 0);
-        const collectionRate = Math.round(last7DaysTotal / 7);
-
         // Render the view first, then initialize charts
-        setTimeout(() => this.initializeStatsCharts([], timeline, statusBreakdown), 100);
+        setTimeout(() => this.initializeStatsCharts(performance, timeline, statusBreakdown), 100);
 
         return `
             <div class="hero-summary">
@@ -1491,7 +1388,7 @@ const App = {
                 <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-md); font-size: var(--font-size-sm); color: var(--text-secondary);">
                     <div>📈 ${settings.currencySymbol}${collectionRate}/maalin</div>
                     <div>•</div>
-                    <div>✅ ${successRate}% guulaystay</div>
+                    <div>✅ ${successMetrics.successRate}% guulaystay</div>
                 </div>
             </div>
             
@@ -1514,12 +1411,14 @@ const App = {
                 </div>
             </div>
 
-            <div class="section-header" style="margin-top: var(--spacing-xl);">
-                <h3 class="section-title">📊 Kampanjoiden Suorituskyky</h3>
-            </div>
-            <div class="card" style="cursor: default; padding: var(--spacing-lg);">
-                <canvas id="campaign-performance-chart" style="max-height: 300px;"></canvas>
-            </div>
+            ${performance.length > 0 ? `
+                <div class="section-header" style="margin-top: var(--spacing-xl);">
+                    <h3 class="section-title">📊 Kampanjoiden Suorituskyky</h3>
+                </div>
+                <div class="card" style="cursor: default; padding: var(--spacing-lg);">
+                    <canvas id="campaign-performance-chart" style="max-height: 300px;"></canvas>
+                </div>
+            ` : ''}
 
             ${topCampaigns.length > 0 || topContributors.length > 0 ? `
                 <div class="section-header" style="margin-top: var(--spacing-xl);">
@@ -1589,8 +1488,9 @@ const App = {
             const icon = a.type === 'payment_received' ? '💰' :
                 a.type === 'campaign_created' ? '✨' :
                     a.type === 'approve_payment' ? '✅' : '📝';
-            // Simple time ago strictly for display
-            const timeAgo = this.getTimeAgo(new Date(a.timestamp));
+            const date = new Date(a.timestamp);
+            const timeAgo = this.getTimeAgo(date);
+
             return `
                             <div style="display: flex; gap: var(--spacing-md); padding: var(--spacing-md); border-bottom: 1px solid var(--border-color);">
                                 <div style="font-size: var(--font-size-xl);">${icon}</div>
@@ -1609,10 +1509,51 @@ const App = {
                     <h3 class="section-title">☁️ Isku-Dubaridka Daruuraha</h3>
                 </div>
                 <div class="card" style="border-left: 4px solid var(--color-primary);">
+                    <div style="margin-bottom: var(--spacing-md);">
+                        <div style="font-weight: var(--font-weight-semibold); margin-bottom: var(--spacing-xs);">
+                            📦 Xogta Maxaliga ah
+                        </div>
+                        <div style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing-md);">
+                            Waxaad haysataa xog ku kaydsan computer-kaaga. Gudbiso cloud-ka si aad uga heli kartid devices kale.
+                        </div>
+                    </div>
+
+                    <div style="background: var(--bg-secondary); padding: var(--spacing-md); border-radius: var(--radius-md); margin-bottom: var(--spacing-md);">
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-md); text-align: center;">
+                            <div>
+                                <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-primary);">
+                                    ${DB.getCampaigns().length}
+                                </div>
+                                <div style="font-size: var(--font-size-xs); color: var(--text-tertiary);">Olole</div>
+                            </div>
+                            <div>
+                                <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-primary);">
+                                    ${DB.getContributors().length}
+                                </div>
+                                <div style="font-size: var(--font-size-xs); color: var(--text-tertiary);">Tabaruce</div>
+                            </div>
+                            <div>
+                                <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-primary);">
+                                    ${DB.getPayments().length}
+                                </div>
+                                <div style="font-size: var(--font-size-xs); color: var(--text-tertiary);">Bixin</div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div style="display: flex; gap: var(--spacing-sm);">
                         <button class="btn btn-primary" style="flex: 1;" onclick="App.handleMigrateToCloud()" id="migrate-btn">
                             ${Icons.render('upload', 'icon icon-sm')} Gudbiso Cloud-ka
                         </button>
+                        <button class="btn btn-outline" style="color: var(--color-error); border-color: var(--color-error);" onclick="App.handleClearLocalData()">
+                            ${Icons.render('trash', 'icon icon-sm')} Tirtir
+                        </button>
+                    </div>
+
+                    <div style="margin-top: var(--spacing-sm); padding: var(--spacing-sm); background: var(--color-primary-subtle); border-radius: var(--radius-sm);">
+                        <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">
+                            💡 <strong>Talo:</strong> Kadib markii aad gudbiso cloud-ka, xogtaada waxaa laga heli karaa devices kale.
+                        </div>
                     </div>
                 </div>
             ` : ''}
@@ -1950,7 +1891,7 @@ const App = {
         App.handleRoute();
     },
 
-    async saveCampaign(event) {
+    saveCampaign(event) {
         event.preventDefault();
         const form = event.target;
         const data = new FormData(form);
@@ -1996,7 +1937,7 @@ const App = {
             return;
         }
 
-        const saved = await DataLayer.saveCampaign(campaign);
+        const saved = DB.saveCampaign(campaign);
         Components.toast('Ololaha waa la keydiyey! ✓', 'success');
 
         setTimeout(() => {
@@ -2004,18 +1945,18 @@ const App = {
         }, 500);
     },
 
-    async deleteCampaign(id) {
-        const campaign = await DataLayer.getCampaign(id);
+    deleteCampaign(id) {
+        const campaign = DB.getCampaign(id);
         if (!campaign) return;
 
         if (confirm(`Ma hubtaa inaad tirtirto "${campaign.name}"?\n\nDhammaan tabarucayaasha ololahanna waa la tirtiri doonaa.`)) {
-            await DataLayer.deleteCampaign(id);
+            DB.deleteCampaign(id);
             Components.toast('Ololaha waa la tirtiray', 'success');
             this.navigate('/');
         }
     },
 
-    async saveContributor(event) {
+    saveContributor(event) {
         event.preventDefault();
         const form = event.target;
         const data = new FormData(form);
@@ -2055,13 +1996,13 @@ const App = {
         }
 
         // Check for duplicate phone number in same campaign
-        const existing = await DataLayer.getContributorByPhone(phone, contributor.campaignId);
+        const existing = DB.getContributorByPhone(phone, contributor.campaignId);
         if (existing && (!contributor.id || existing.id !== contributor.id)) {
             Components.toast('Lambarkaan horay ayaa loo isticmaalay ololahan', 'error');
             return;
         }
 
-        await DataLayer.saveContributor(contributor);
+        DB.saveContributor(contributor);
         Components.toast('Tabarucaha waa la keydiyey! ✓', 'success');
 
         setTimeout(() => {
@@ -2069,11 +2010,11 @@ const App = {
         }, 500);
     },
 
-    async updateContributorStatus(id, status) {
-        const contributor = await DataLayer.getContributor(id);
+    updateContributorStatus(id, status) {
+        const contributor = DB.getContributor(id);
         if (contributor) {
             contributor.status = status;
-            await DataLayer.saveContributor(contributor);
+            DB.saveContributor(contributor);
 
             const msg = status === 'paid' ? 'Waa la calaamadiyey bixiyey ✓' :
                 status === 'declined' ? 'Waa la calaamadiyey diidey' :
@@ -2083,11 +2024,11 @@ const App = {
         }
     },
 
-    async deleteContributor(id) {
-        const contributor = await DataLayer.getContributor(id);
+    deleteContributor(id) {
+        const contributor = DB.getContributor(id);
         if (contributor && confirm(`Ma hubtaa inaad tirtirto ${contributor.name}?`)) {
             const campaignId = contributor.campaignId;
-            await DataLayer.deleteContributor(id);
+            DB.deleteContributor(id);
             Components.toast('Tabarucaha waa la tirtiray', 'success');
             this.navigate('/campaign-contributors/' + campaignId);
         }
@@ -2097,37 +2038,35 @@ const App = {
     // WhatsApp Functions
     // ========================================
 
-    async openWhatsAppQuick(contributorId) {
-        const contributor = await DataLayer.getContributor(contributorId);
+    openWhatsAppQuick(contributorId) {
+        const contributor = DB.getContributor(contributorId);
         if (!contributor) return;
-        const campaign = await DataLayer.getCampaign(contributor.campaignId);
-        const template = DataLayer.getTemplate(contributor.status === 'paid' ? 'thank_you' : 'reminder');
-        const settings = DataLayer.getSettings();
-        const stats = await DataLayer.getCampaignStats(campaign.id);
+        const campaign = DB.getCampaign(contributor.campaignId);
+        const template = DB.getTemplate(contributor.status === 'paid' ? 'thank_you' : 'reminder');
 
         const variables = {
             name: contributor.name.split(' ')[0],
             campaign_name: campaign.name,
-            amount: `${settings.currencySymbol}${contributor.amount}`,
-            goal: `${settings.currencySymbol}${campaign.goal}`,
-            collected: `${settings.currencySymbol}${stats.collected}`,
-            percent: `${stats.percent}%`,
-            zaad_number: campaign.zaadNumber || settings.defaultZaad
+            amount: `${DB.getSettings().currencySymbol}${contributor.amount}`,
+            goal: `${DB.getSettings().currencySymbol}${campaign.goal}`,
+            collected: `${DB.getSettings().currencySymbol}${DB.getCampaignStats(campaign.id).collected}`,
+            percent: `${DB.getCampaignStats(campaign.id).percent}%`,
+            zaad_number: campaign.zaadNumber || DB.getSettings().defaultZaad
         };
 
         const message = WhatsApp.generateMessage(template.type, variables);
         WhatsApp.openChat(contributor.phone, message);
-        // DB.logAction(campaign.id, 'whatsapp_sent', `Quick WhatsApp ${template.type} to ${contributor.name}`);
+        DB.logAction(campaign.id, 'whatsapp_sent', `Quick WhatsApp ${template.type} to ${contributor.name}`);
         Components.toast('WhatsApp waa la furay', 'success');
     },
 
-    async sendWhatsAppMessage(contributorId, templateType) {
-        const contributor = await DataLayer.getContributor(contributorId);
+    sendWhatsAppMessage(contributorId, templateType) {
+        const contributor = DB.getContributor(contributorId);
         if (!contributor) return;
 
-        const campaign = await DataLayer.getCampaign(contributor.campaignId);
-        const stats = await DataLayer.getCampaignStats(contributor.campaignId);
-        const settings = DataLayer.getSettings();
+        const campaign = DB.getCampaign(contributor.campaignId);
+        const stats = DB.getCampaignStats(contributor.campaignId);
+        const settings = DB.getSettings();
 
         const variables = {
             name: contributor.name.split(' ')[0],
@@ -2147,8 +2086,8 @@ const App = {
         Components.toast('WhatsApp waa la furay', 'success');
     },
 
-    async renderSuggestedActions(campaignId) {
-        const actions = await DataLayer.getSuggestedActions(campaignId);
+    renderSuggestedActions(campaignId) {
+        const actions = DB.getSuggestedActions(campaignId);
         if (!actions.length) return '';
 
         return `

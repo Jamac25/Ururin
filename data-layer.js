@@ -239,6 +239,72 @@ const DataLayer = {
         }
     },
 
+    // ========================================
+    // Audit Logs
+    // ========================================
+
+    async getLogs(campaignId = null) {
+        // Currently logs are local only, but we wrap it to be async-ready
+        return DB.getLogs(campaignId);
+    },
+
+    // ========================================
+    // Automation Logic
+    // ========================================
+
+    async getSuggestedActions(campaignId) {
+        const actions = [];
+        // Note: Using await for future-proofing, though current underlying calls might be mixed
+        const stats = await this.getCampaignStats(campaignId);
+        const campaign = await this.getCampaign(campaignId);
+
+        if (!campaign) return actions;
+
+        // 1. New Approvals -> Update Ready
+        // For now, logs are local. If we move logs to Supabase, we'd fetch them here.
+        const logs = await this.getLogs(campaignId);
+        const lastApproval = logs.filter(l => l.action === 'approve_payment').sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+        const lastUpdate = logs.filter(l => l.action === 'whatsapp_sent' && l.details.includes('update')).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+
+        if (lastApproval && (!lastUpdate || new Date(lastApproval.timestamp) > new Date(lastUpdate.timestamp))) {
+            actions.push({
+                type: 'update_ready',
+                title: 'War Cusub waa diyaar',
+                text: 'Bixiyo cusub ayaa la helay. Dir warbixinta group-ka.',
+                btnText: 'Dir Warbixinta',
+                route: `/send-messages/${campaignId}`
+            });
+        }
+
+        // 2. Unpaid > 3 days -> Reminder Ready
+        // We re-implement the logic here using DataLayer methods instead of relying on synchronous WhatsApp utility
+        const contributors = await this.getContributors(campaignId);
+        const now = new Date();
+        const threshold = 72 * 60 * 60 * 1000; // 72 hours
+
+        const pendingReminders = contributors.filter(c => {
+            if (c.status !== 'pending') return false;
+            const created = new Date(c.createdAt);
+            return (now - created) > threshold;
+        });
+
+        if (pendingReminders.length > 0) {
+            actions.push({
+                type: 'reminder_ready',
+                title: `Xasuusin waa diyaar (${pendingReminders.length})`,
+                text: 'Dadka qaar ayaan wali bixin. Ma rabtaa inaad xasuusiso?',
+                btnText: 'Dir Xasuusinta',
+                route: `/reminders/${campaignId}`
+            });
+        }
+
+        return actions;
+    },
+
+    async getRecentActivity(limit = 8) {
+        return DB.getRecentActivity(limit);
+    },
+
     hasLocalData() {
         const campaigns = DB.getCampaigns();
         return campaigns && campaigns.length > 0;

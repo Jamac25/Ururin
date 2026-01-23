@@ -9,9 +9,12 @@ const Components = {
     // Campaign Card - Premium
     // ========================================
 
-    campaignCard(campaign) {
-        const stats = DB.getCampaignStats(campaign.id);
-        const settings = DB.getSettings();
+    async campaignCard(campaign) {
+        let stats = campaign.stats;
+        if (!stats) {
+            stats = await DataLayer.getCampaignStats(campaign.id);
+        }
+        const settings = DataLayer.getSettings();
 
         // Calculate days remaining
         let daysText = '';
@@ -62,8 +65,8 @@ const Components = {
     // Contributor Row - Modern
     // ========================================
 
-    contributorRow(contributor, showCampaign = false) {
-        const settings = DB.getSettings();
+    contributorRow(contributor, showCampaign = false, campaign = null) {
+        const settings = DataLayer.getSettings();
         const nameParts = contributor.name.split(' ');
         const initials = nameParts.map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
@@ -89,9 +92,10 @@ const Components = {
 
         let campaignInfo = '';
         if (showCampaign) {
-            const campaign = DB.getCampaign(contributor.campaignId);
-            if (campaign) {
-                campaignInfo = `<div style="font-size: var(--font-size-xs); color: var(--text-tertiary); margin-top: 2px;">${campaign.emoji} ${campaign.name}</div>`;
+            // Use passed campaign or fallback (though fallback might not work with full async)
+            const c = campaign || DB.getCampaign(contributor.campaignId);
+            if (c) {
+                campaignInfo = `<div style="font-size: var(--font-size-xs); color: var(--text-tertiary); margin-top: 2px;">${c.emoji || '📂'} ${c.name}</div>`;
             }
         }
 
