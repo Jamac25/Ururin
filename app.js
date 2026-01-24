@@ -302,9 +302,9 @@ const App = {
         const publicRoutes = ['/join', '/confirm-payment', '/payment-success', '/login', '/register', '/welcome'];
         const isPublicRoute = publicRoutes.some(route => hash.includes(route));
 
-        // Start on welcome page if no specific route or if unauthenticated
+        // Start on welcome page ONLY if no hash is present
         if (!hash || hash === '#' || hash === '#/') {
-            window.location.hash = Auth.isAuthenticated() ? '#/welcome' : '#/welcome';
+            window.location.hash = '#/welcome';
         } else if (!Auth.isAuthenticated() && !isPublicRoute) {
             window.location.hash = '#/login';
         }
@@ -643,9 +643,21 @@ const App = {
                     </div>
                 </div>
                 
-                <button class="welcome-cta" onclick="App.navigate('/add')">
-                    Ku Bilow - Abuur Olole Ugu Horreeysa →
-                </button>
+                <div class="welcome-actions" style="display: flex; flex-direction: column; gap: var(--spacing-md); width: 100%;">
+                    <button class="welcome-cta" onclick="App.navigate('/add')">
+                        Ku Bilow - Abuur Olole →
+                    </button>
+                    
+                    ${!Auth.isAuthenticated() ? `
+                        <button class="btn btn-secondary btn-block" onclick="App.navigate('/login')">
+                            🔐 Gal Akoonkaaga
+                        </button>
+                    ` : `
+                        <button class="btn btn-secondary btn-block" onclick="App.navigate('/')">
+                            📊 Tag Dashboardka
+                        </button>
+                    `}
+                </div>
             </div>
         `;
     },
