@@ -262,18 +262,31 @@ const SupabaseDB = {
                 this.getPayments(campaignId)
             ]);
 
-            if (!campaign) return null;
+            // If campaign not found, return reasonable empty defaults instead of null to prevent UI crashes
+            if (!campaign) {
+                return {
+                    total: 0,
+                    paidCount: 0,
+                    pendingCount: 0,
+                    declinedCount: 0,
+                    collected: 0,
+                    goal: 0,
+                    percent: 0,
+                    remaining: 0,
+                    pendingPayments: 0
+                };
+            }
 
-            const paid = contributors.filter(c => c.status === 'paid');
-            const pending = contributors.filter(c => c.status === 'pending');
-            const declined = contributors.filter(c => c.status === 'declined');
+            const paid = (contributors || []).filter(c => c.status === 'paid');
+            const pending = (contributors || []).filter(c => c.status === 'pending');
+            const declined = (contributors || []).filter(c => c.status === 'declined');
 
             const collected = paid.reduce((sum, c) => sum + (parseFloat(c.amount) || 0), 0);
             const goal = parseFloat(campaign.goal) || 0;
             const percent = goal > 0 ? Math.min(100, Math.round((collected / goal) * 100)) : 0;
 
             return {
-                total: contributors.length,
+                total: (contributors || []).length,
                 paidCount: paid.length,
                 pendingCount: pending.length,
                 declinedCount: declined.length,
@@ -281,11 +294,22 @@ const SupabaseDB = {
                 goal,
                 percent,
                 remaining: Math.max(0, goal - collected),
-                pendingPayments: payments.filter(p => p.status === 'pending').length
+                pendingPayments: (payments || []).filter(p => p.status === 'pending').length
             };
         } catch (error) {
             console.error('getCampaignStats error:', error);
-            return null;
+            // Always return a valid object to avoid breaking the UI
+            return {
+                total: 0,
+                paidCount: 0,
+                pendingCount: 0,
+                declinedCount: 0,
+                collected: 0,
+                goal: 0,
+                percent: 0,
+                remaining: 0,
+                pendingPayments: 0
+            };
         }
     },
 

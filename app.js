@@ -297,14 +297,18 @@ const App = {
             }
         });
 
-        // Check if user is authenticated
+        // Check if user is authenticated and on a protected route
         const hash = window.location.hash;
-        const publicRoutes = ['/join', '/confirm-payment', '/payment-success', '/login', '/register'];
+        const publicRoutes = ['/join', '/confirm-payment', '/payment-success', '/login', '/register', '/welcome'];
         const isPublicRoute = publicRoutes.some(route => hash.includes(route));
 
         if (!Auth.isAuthenticated() && !isPublicRoute) {
-            window.location.hash = '#/login';
-            // Don't return - continue initialization
+            // If no hash at all, show welcome instead of login
+            if (!hash || hash === '#' || hash === '#/') {
+                window.location.hash = '#/welcome';
+            } else {
+                window.location.hash = '#/login';
+            }
         }
 
         // Load theme
@@ -331,16 +335,21 @@ const App = {
             settingsBtn.addEventListener('click', () => this.navigate('/settings'));
         }
 
-        // Initial route - Always start from home page when app is first loaded
-        // This ensures shared links always open to the main page
+        // Initial route - Always start from landing or login if not authenticated
         const currentHash = window.location.hash;
-        const protectedRoutes = ['/campaign/', '/edit/', '/add-contributor/', '/contributor/', '/edit-contributor/'];
+        const protectedRoutes = ['/campaign/', '/edit/', '/add-contributor/', '/contributor/', '/edit-contributor/', '/stats'];
         const isProtectedRoute = protectedRoutes.some(route => currentHash.includes(route));
 
-        // If no hash or on a protected route, go to home
-        if (!currentHash || currentHash === '#' || isProtectedRoute) {
-            window.location.hash = '#/';
+        if (!currentHash || currentHash === '#' || currentHash === '#/') {
+            if (!Auth.isAuthenticated()) {
+                window.location.hash = '#/welcome';
+            } else {
+                window.location.hash = '#/';
+            }
+        } else if (isProtectedRoute && !Auth.isAuthenticated()) {
+            window.location.hash = '#/login';
         }
+
         this.handleRoute(); // Always call this to render the page
 
         // Register Service Worker for PWA
@@ -451,20 +460,14 @@ const App = {
                         this.updateNavigation(route);
 
                         // Auth check
-                        const protectedRoutes = ['/send-messages', '/reminders', '/edit-campaign', '/campaign-contributors', '/add-contributor', '/edit-contributor'];
-                        if (protectedRoutes.includes(route) && params.id) {
-                            let campaignId = params.id;
-                            if (route === '/edit-contributor') {
-                                const contributor = await DataLayer.getContributor(params.id);
-                                if (contributor) campaignId = contributor.campaignId;
-                            }
-                            // Optimization: Check if we have data access (local or remote)
-                            const isAuthenticated = Auth.isAuthenticated();
-                            const hasLocalData = DataLayer.hasLocalData && DataLayer.hasLocalData();
+                        const publicRoutesList = ['/join', '/confirm-payment', '/payment-success', '/login', '/register', '/welcome'];
+                        const isPublicRoute = publicRoutesList.some(r => route.includes(r));
+                        const isAuthenticated = Auth.isAuthenticated();
 
-                            // If neither authenticated nor has local data (legacy), redirect
-                            // Note: We might need a better check here depending on strictness
-                            // For now, simpler check
+                        if (!isAuthenticated && !isPublicRoute) {
+                            console.log('Redirecting to login: Unauthenticated access to', route);
+                            window.location.hash = '#/login';
+                            return;
                         }
 
                         // Show loading state if needed
@@ -738,15 +741,16 @@ const App = {
         let reminderCount = 0;
         let updateCount = 0;
 
-        // Process sequentially or parallel
-        for (const c of campaigns) {
-            const actions = await DataLayer.getSuggestedActions(c.id);
+        // Process in parallel for speed
+        const results = await Promise.all(campaigns.map(c => DataLayer.getSuggestedActions(c.id)));
+
+        results.forEach(actions => {
             actions.forEach(a => {
                 totalActions++;
                 if (a.type === 'reminder_ready') reminderCount++;
                 if (a.type === 'update_ready') updateCount++;
             });
-        }
+        });
 
         if (totalActions === 0) return '';
 
@@ -768,16 +772,17 @@ const App = {
     },
 
     async viewCampaigns() {
-        const campaigns = await DataLayer.getCampaigns();
+        const campaigns = await DataLayer.getCampaigns() || [];
 
         if (!campaigns.length) {
-            return Components.emptyState(
-                '📋',
-                'Wali ma jirto olole',
-                'Abuur ololahaaga ugu horreeya!',
-                '➕ Abuur Olole',
-                '/add'
-            );
+            return `
+                <div class="welcome-hero" style="padding: var(--spacing-xl) var(--spacing-md);">
+                    <div class="emoji-hero">✨</div>
+                    <h1>Ku soo dhawaaw Ololeeye</h1>
+                    <p class="text-secondary mb-xl">Ma haysid wax olole ah hadda. Bilow mid cusub!</p>
+                    <button class="btn btn-primary" onclick="App.navigate('/add')">➕ Abuur Olole Cusub</button>
+                </div>
+            `;
         }
 
         // Sort by most recently updated
