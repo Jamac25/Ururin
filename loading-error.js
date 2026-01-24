@@ -108,6 +108,13 @@ const ErrorHandler = {
         const message = this.messages[type];
         Components.toast(message, 'error');
 
+        // If auth error, redirect to login
+        if (type === 'auth') {
+            setTimeout(() => {
+                window.location.hash = '#/login';
+            }, 1500);
+        }
+
         // Track error
         if (typeof Analytics !== 'undefined') {
             Analytics.trackEvent('Error', type, context);

@@ -640,48 +640,59 @@ const App = {
     // ========================================
 
     async viewHome() {
-        const campaigns = await DataLayer.getCampaigns();
+        try {
+            const campaigns = (await DataLayer.getCampaigns()) || [];
 
-        // Redirect to welcome page if no campaigns exist
-        if (!campaigns.length) {
-            this.navigate('/welcome');
-            return '';
-        }
+            // Explicit empty state instead of redirecting
+            if (!campaigns.length) {
+                return `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✨</div>
+                        <h2 class="empty-state-title">Ku soo dhawaaw Ololeeye</h2>
+                        <p class="empty-state-text">Ma haysid wax olole ah hadda. Bilow mid cusub si aad u maamusho lacag-ururintaada.</p>
+                        <button class="btn btn-primary" onclick="App.navigate('/add')">➕ Abuur Olole Cusub</button>
+                    </div>
+                `;
+            }
 
-        // Sort by most recently updated
-        campaigns.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+            // Sort by most recently updated
+            campaigns.sort((a, b) => {
+                const dateA = new Date(a.updated_at || a.updatedAt || 0);
+                const dateB = new Date(b.updated_at || b.updatedAt || 0);
+                return dateB - dateA;
+            });
 
-        // Get totals and stats in parallel
-        let totalCollected = 0;
-        let totalGoal = 0;
-        let totalContributors = 0;
+            // Get totals and stats in parallel
+            let totalCollected = 0;
+            let totalGoal = 0;
+            let totalContributors = 0;
 
-        const campaignsWithStats = await Promise.all(campaigns.map(async c => {
-            const stats = await DataLayer.getCampaignStats(c.id);
-            totalCollected += stats.collected;
-            totalGoal += c.goal;
-            totalContributors += stats.total;
-            return { ...c, stats }; // Attach stats to campaign object
-        }));
+            const campaignsWithStats = await Promise.all(campaigns.map(async c => {
+                const stats = await DataLayer.getCampaignStats(c.id);
+                totalCollected += stats.collected;
+                totalGoal += c.goal;
+                totalContributors += stats.total;
+                return { ...c, stats }; // Attach stats to campaign object
+            }));
 
-        const settings = DataLayer.getSettings(); // Sync
-        const pendingPayments = await DataLayer.getPendingPayments();
-        const automationBadgesObj = await this.renderHomeAutomationBadges(campaigns);
+            const settings = DataLayer.getSettings(); // Sync
+            const pendingPayments = await DataLayer.getPendingPayments();
+            const automationBadgesObj = await this.renderHomeAutomationBadges(campaigns);
 
-        // Pre-render campaign cards
-        // Note: Components.campaignCard might be synchronous, assuming it takes the campaign object (which now has stats?)
-        // Actually Components.campaignCard likely calls DB.getCampaignStats internally? 
-        // Let's check Components.campaignCard later. For now assume it might need refactor or we pass stats.
-        // If Components.campaignCard calls DB, it will fail/return empty. 
-        // FIX: We need to check Components.campaignCard. 
-        // For this step, I will assume I need to fetch stats inside ViewHome and maybe update CampaignCard to accept stats?
-        // Or if Components.campaignCard uses DB.getCampaignStats, and that redirects to DataLayer (which is async), it will return a Promise.
-        // So Components.campaignCard MUST be updated or we need to await it. 
+            // Pre-render campaign cards
+            // Note: Components.campaignCard might be synchronous, assuming it takes the campaign object (which now has stats?)
+            // Actually Components.campaignCard likely calls DB.getCampaignStats internally? 
+            // Let's check Components.campaignCard later. For now assume it might need refactor or we pass stats.
+            // If Components.campaignCard calls DB, it will fail/return empty. 
+            // FIX: We need to check Components.campaignCard. 
+            // For this step, I will assume I need to fetch stats inside ViewHome and maybe update CampaignCard to accept stats?
+            // Or if Components.campaignCard uses DB.getCampaignStats, and that redirects to DataLayer (which is async), it will return a Promise.
+            // So Components.campaignCard MUST be updated or we need to await it. 
 
-        // Let's await the badge string
-        const automationBadges = automationBadgesObj;
+            // Let's await the badge string
+            const automationBadges = automationBadgesObj;
 
-        return `
+            return `
             <div style="background: var(--gradient-hero-mesh); border-radius: 24px; padding: 48px 24px; margin-bottom: 32px; position: relative; overflow: hidden; box-shadow: var(--shadow-hero), var(--glow-hero);">
                 <div style="position: relative; z-index: 1; text-align: center;">
                     <div style="font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.95); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px;">
@@ -734,6 +745,17 @@ const App = {
             
             ${automationBadges}
         `;
+        } catch (error) {
+            console.error('viewHome error:', error);
+            return `
+                <div class="p-xl text-center">
+                    <div class="emoji-lg mb-md">⚠️</div>
+                    <h3>Khalad ayaa dhacay</h3>
+                    <p class="text-secondary">${error.message}</p>
+                    <button onclick="location.reload()" class="btn btn-primary mt-md">Dib u rari</button>
+                </div>
+            `;
+        }
     },
 
     async renderHomeAutomationBadges(campaigns) {
@@ -772,32 +794,41 @@ const App = {
     },
 
     async viewCampaigns() {
-        const campaigns = await DataLayer.getCampaigns() || [];
+        try {
+            const campaigns = (await DataLayer.getCampaigns()) || [];
 
-        if (!campaigns.length) {
+            if (!campaigns.length) {
+                return `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <h2 class="empty-state-title">Wali ma jirto olole</h2>
+                        <p class="empty-state-text">Ma haysid wax olole ah hadda. Bilow mid cusub!</p>
+                        <button class="btn btn-primary" onclick="App.navigate('/add')">➕ Abuur Olole Cusub</button>
+                    </div>
+                `;
+            }
+
+            // Sort by most recently updated
+            campaigns.sort((a, b) => {
+                const dateA = new Date(a.updated_at || a.updatedAt || 0);
+                const dateB = new Date(b.updated_at || b.updatedAt || 0);
+                return dateB - dateA;
+            });
+
+            // Note: passing stats explicitly would be better, but lazy loading works too since campaignCard handles it
+            const cardHtmls = await Promise.all(campaigns.map(c => Components.campaignCard(c)));
+
             return `
-                <div class="welcome-hero" style="padding: var(--spacing-xl) var(--spacing-md);">
-                    <div class="emoji-hero">✨</div>
-                    <h1>Ku soo dhawaaw Ololeeye</h1>
-                    <p class="text-secondary mb-xl">Ma haysid wax olole ah hadda. Bilow mid cusub!</p>
-                    <button class="btn btn-primary" onclick="App.navigate('/add')">➕ Abuur Olole Cusub</button>
+                <div class="section-header">
+                    <h2 class="section-title">Dhammaan Ololaha</h2>
+                    <span style="font-size: var(--font-size-sm); color: var(--text-tertiary);">${campaigns.length}</span>
                 </div>
+                ${cardHtmls.join('')}
             `;
+        } catch (error) {
+            console.error('viewCampaigns error:', error);
+            return `<div class="p-xl text-center"><h3>Khalad ayaa dhacay</h3><p>${error.message}</p></div>`;
         }
-
-        // Sort by most recently updated
-        campaigns.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-
-        // Note: passing stats explicitly would be better, but lazy loading works too since campaignCard handles it
-        const cardHtmls = await Promise.all(campaigns.map(c => Components.campaignCard(c)));
-
-        return `
-            <div class="section-header">
-                <h2 class="section-title">Dhammaan Ololaha</h2>
-                <span style="font-size: var(--font-size-sm); color: var(--text-tertiary);">${campaigns.length}</span>
-            </div>
-            ${cardHtmls.join('')}
-        `;
     },
 
     async viewCampaignDetail(id) {
