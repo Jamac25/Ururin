@@ -199,6 +199,19 @@ const Auth = {
         }
     },
 
+    async signOut() {
+        try {
+            const { error } = await supabase.auth.signOut();
+            if (error) throw error;
+            this.currentUser = null;
+            this.currentProfile = null;
+            return { success: true };
+        } catch (error) {
+            console.error('Sign out error:', error);
+            return { success: false, error: error.message };
+        }
+    },
+
     // ========================================
     // Helpers
     // ========================================

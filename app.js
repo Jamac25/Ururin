@@ -302,13 +302,11 @@ const App = {
         const publicRoutes = ['/join', '/confirm-payment', '/payment-success', '/login', '/register', '/welcome'];
         const isPublicRoute = publicRoutes.some(route => hash.includes(route));
 
-        if (!Auth.isAuthenticated() && !isPublicRoute) {
-            // If no hash at all, show welcome instead of login
-            if (!hash || hash === '#' || hash === '#/') {
-                window.location.hash = '#/welcome';
-            } else {
-                window.location.hash = '#/login';
-            }
+        // Start on welcome page if no specific route or if unauthenticated
+        if (!hash || hash === '#' || hash === '#/') {
+            window.location.hash = Auth.isAuthenticated() ? '#/welcome' : '#/welcome';
+        } else if (!Auth.isAuthenticated() && !isPublicRoute) {
+            window.location.hash = '#/login';
         }
 
         // Load theme
@@ -335,17 +333,20 @@ const App = {
             settingsBtn.addEventListener('click', () => this.navigate('/settings'));
         }
 
-        // Initial route - Always start from landing or login if not authenticated
+        // Logout button
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => this.logout());
+            logoutBtn.classList.toggle('hidden', !Auth.isAuthenticated());
+        }
+
+        // Initial route - Always start from landing (Welcome) unless a specific route is bookmarked
         const currentHash = window.location.hash;
         const protectedRoutes = ['/campaign/', '/edit/', '/add-contributor/', '/contributor/', '/edit-contributor/', '/stats'];
         const isProtectedRoute = protectedRoutes.some(route => currentHash.includes(route));
 
         if (!currentHash || currentHash === '#' || currentHash === '#/') {
-            if (!Auth.isAuthenticated()) {
-                window.location.hash = '#/welcome';
-            } else {
-                window.location.hash = '#/';
-            }
+            window.location.hash = '#/welcome';
         } else if (isProtectedRoute && !Auth.isAuthenticated()) {
             window.location.hash = '#/login';
         }
@@ -470,6 +471,12 @@ const App = {
                             return;
                         }
 
+                        // Show logout button if authenticated
+                        const logoutBtnResult = document.getElementById('logout-btn');
+                        if (logoutBtnResult) {
+                            logoutBtnResult.classList.toggle('hidden', !isAuthenticated);
+                        }
+
                         // Show loading state if needed
                         mainContent.innerHTML = '<div class="loading-state"><div class="spinner"></div></div>';
 
@@ -528,6 +535,14 @@ const App = {
 
         const viewFn = routes[route];
         return viewFn ? await viewFn() : this.view404();
+    },
+
+    async logout() {
+        if (confirm('Ma hubo qof inaad rabto inaad ka baxdo?')) {
+            await Auth.signOut();
+            Components.toast('Si guul leh ayaad uga baxday', 'success');
+            window.location.hash = '#/welcome';
+        }
     },
 
     navigate(path) {
