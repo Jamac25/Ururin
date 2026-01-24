@@ -3,9 +3,9 @@
    Better caching strategy with network-first for HTML
    ======================================== */
 
-const CACHE_NAME = 'ololeeye-v2';
-const STATIC_CACHE = 'ololeeye-static-v2';
-const DYNAMIC_CACHE = 'ololeeye-dynamic-v2';
+const CACHE_NAME = 'ololeeye-v3';
+const STATIC_CACHE = 'ololeeye-static-v3';
+const DYNAMIC_CACHE = 'ololeeye-dynamic-v3';
 
 const STATIC_ASSETS = [
     './',
@@ -22,6 +22,7 @@ const STATIC_ASSETS = [
     './quick-actions.js',
     './onboarding.js',
     './auth.js',
+    './supabase_config.js',
     './logo.png',
     './manifest.json'
 ];

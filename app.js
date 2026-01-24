@@ -273,6 +273,13 @@ const App = {
     // ========================================
 
     async init() {
+        // Resilience: Wait for Auth object if it's not yet defined (module loading race condition)
+        if (typeof Auth === 'undefined') {
+            return new Promise(resolve => {
+                setTimeout(() => resolve(this.init()), 100);
+            });
+        }
+
         // Initialize authentication first
         try {
             await Auth.init();
